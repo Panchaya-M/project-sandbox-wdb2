@@ -1,39 +1,60 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react";
 import Button from "./Button";
 
+const Title = ({ title }) => {
+  return <h6 className="text-h6Bold xxl:text-h5Bold mb-4 md:mb-6">{title}</h6>;
+};
+
+const Paragraph = ({ text }) => {
+  return <p className="text-bodyText mb-4 md:mb-6">{text}</p>;
+};
+
 function Footer() {
   const [email, setEmail] = useState("");
+
+  {
+    /* List from API */
+  }
+  const featuredProduct = [
+    {
+      name: "Men",
+      link: "",
+    },
+    {
+      name: "Ladies",
+      link: "",
+    },
+    {
+      name: "Shoes",
+      link: "",
+    },
+    {
+      name: "Accessories",
+      link: "",
+    },
+  ];
+
   return (
     <footer className="bg-black text-white py-6">
       <div className="wrapper grid grid-cols-1 md:grid-cols-3 gap-14 md:gap-[38px] 3xl:gap-[45px] mb-4 md:mb-4 text-center md:text-left">
         <div>
-          <h6 className="text-h6Bold xxl:text-h5Bold mb-4 md:mb-6">
-            Featured product
-          </h6>
+          <Title title="Featured product" />
           <ul>
-            {/* List from API */}
-            <li className="text-subHeading mb-4">
-              <a href="">Men</a>
-            </li>
-            <li className="text-subHeading mb-4">
-              <a href="">Ladies</a>
-            </li>
-            <li className="text-subHeading mb-4">
-              <a href="">Shoes</a>
-            </li>
-            <li className="text-subHeading mb-4">
-              <a href="">Accessories</a>
-            </li>
+            {featuredProduct.length
+              ? featuredProduct.map(feature => (
+                  <li key={feature.name} className="text-subHeading mb-4">
+                    <a href={feature.link}>{feature.name}</a>
+                  </li>
+                ))
+              : null}
           </ul>
         </div>
 
         <div>
-          <h6 className="text-h6Bold xxl:text-h5Bold mb-4 md:mb-6">
-            Register with us
-          </h6>
-          <p className="text-bodyText mb-4 md:mb-6">
-            Sign up now and get 20% off your first purchase!
-          </p>
+          <Title title="Register with us" />
+          <Paragraph text="Sign up now and get 20% off your first purchase!" />
+
           <div className="flex justify-center md:justify-start">
             <Button
               text="Sign up now"
@@ -44,16 +65,12 @@ function Footer() {
         </div>
 
         <div>
-          <h6 className="text-h6Bold xxl:text-h5Bold mb-4 md:mb-6">
-            Customer services
-          </h6>
-          <p className="text-bodyText mb-4 md:mb-6">
-            MBK Tower 20th Floor, 444, Phaya Thai Rd, Wang Mai, Pathum Wan,
-            Bangkok 10330
-          </p>
-          <p className="text-bodyText mb-4 md:mb-6">
-            Email: jane.doe@realmail.com
-          </p>
+          <Title title="Customer services" />
+          <Paragraph
+            text="MBK Tower 20th Floor, 444, Phaya Thai Rd, Wang Mai, Pathum Wan,
+            Bangkok 10330"
+          />
+          <Paragraph text="Email: jane.doe@realmail.com" />
 
           <form onSubmit={() => console.log("subscribe email: ", email)}>
             <div className="mb-4 md:mb-6">
