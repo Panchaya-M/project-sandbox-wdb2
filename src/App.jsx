@@ -1,4 +1,4 @@
-import { Layouts } from "./Components";
+import { Layouts } from "./components";
 
 function App() {
   return <Layouts></Layouts>;
