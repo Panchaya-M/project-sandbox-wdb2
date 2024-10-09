@@ -5,3 +5,11 @@
 body {
   @apply font-poppins;
 }
+
+.wrapper {
+  @apply w-full px-4 md:px-0 md:container md:mx-auto xxl:max-w-[1192px] 3xl:max-w-[1600px];
+}
+
+.btn {
+  @apply px-2.5 py-[7px] text-bodyText flex flex-row justify-center items-center;
+}
