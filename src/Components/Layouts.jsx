@@ -4,12 +4,14 @@ import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
 function Layouts({ children }) {
-  return <>
-    <Navbar />
-    <Sidebar />
-    { children }
-    <Footer />
-  </>;
+  return (
+    <>
+      <Navbar />
+      <Sidebar />
+      {children}
+      <Footer />
+    </>
+  );
 }
 
 export default Layouts;
