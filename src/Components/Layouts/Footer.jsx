@@ -1,13 +1,13 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
-import Button from "./Button";
+import Button from "../UI/Button";
 
 const Title = ({ title }) => {
-  return <h6 className="text-h6Bold xxl:text-h5Bold mb-4 md:mb-6">{title}</h6>;
+  return <h6 className="font-bold mb-4 md:mb-6">{title}</h6>;
 };
 
 const Paragraph = ({ text }) => {
-  return <p className="text-bodyText mb-4 md:mb-6">{text}</p>;
+  return <p className="mb-4 md:mb-6">{text}</p>;
 };
 
 function Footer() {
@@ -42,7 +42,7 @@ function Footer() {
           <Title title="Featured product" />
           <ul>
             {featuredProduct.length
-              ? featuredProduct.map(feature => (
+              ? featuredProduct.map((feature) => (
                   <li key={feature.name} className="text-subHeading mb-4">
                     <a href={feature.link}>{feature.name}</a>
                   </li>
@@ -79,7 +79,7 @@ function Footer() {
                 placeholder="Enter your email"
                 className="w-full py-[17px] px-2.5 text-black placeholder:text-bodyText placeholder:text-black-500"
                 value={email}
-                onChange={event => setEmail(event.target.value)}
+                onChange={(event) => setEmail(event.target.value)}
               />
             </div>
             <div className="flex justify-center md:justify-start">

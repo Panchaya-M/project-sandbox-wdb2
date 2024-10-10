@@ -1,7 +1,7 @@
-import { Layouts } from "./components";
+import { Layouts } from "./Components";
 
 function App() {
-  return <Layouts></Layouts>;
+  return <Layouts/>;
 }
 
 export default App;
