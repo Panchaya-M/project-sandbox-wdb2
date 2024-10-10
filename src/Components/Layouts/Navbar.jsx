@@ -1,10 +1,16 @@
+import BasketEmpty from "../../assets/basket-empty.svg";
+import Search from "../../assets/search_w.svg";
+import Heart from "../../assets/heart_w.svg";
+import Person from "../../assets/person_w.svg";
+import Cart from "../../assets/cart_w.svg";
+
 function Navbar() {
   return (
     <nav className="bg-black text-white">
       {/* Container */}
-      <div className="container mx-auto py-2.5">
+      <div className="container mx-auto flex items-center justify-between py-2.5">
         {/* Left panel */}
-        <div className="flex items-center gap-x-4">
+        <div className="flex items-center gap-x-10">
           {/* Logo Container */}
           <div className="">
             {/* Logo Image */}
@@ -13,7 +19,7 @@ function Navbar() {
 
           {/* Menu Container */}
           <div className="">
-            <ul className="flex gap-x-2">
+            <ul className="hidden sm:flex gap-x-6">
               <li>Men</li>
               <li>Women</li>
               <li>Kids</li>
@@ -24,9 +30,22 @@ function Navbar() {
         </div>
 
         {/* Right panel */}
-        <div className="">
+        <div className="flex">
           {/* Cart */}
-          <div className=""></div>
+          <ul className="flex gap-x-6">
+            <li className="">
+              <img src={Search} alt="Search" />
+            </li>
+            <li>
+              <img src={Heart} alt="Heart" />
+            </li>
+            <li>
+              <img src={Person} alt="Person" />
+            </li>
+            <li>
+              <img src={Cart} alt="Cart" />
+            </li>
+          </ul>
         </div>
       </div>
     </nav>

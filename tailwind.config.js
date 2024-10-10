@@ -6,6 +6,14 @@ export default {
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],
       },
+      container: {
+        padding: "2rem",
+        screens: {
+          // sm: "1500px",
+          // md: "1500px",
+          lg: "90vw",
+        },
+      },
       colors: {
         limeGreen: {
           50: "#FBFFE7",
