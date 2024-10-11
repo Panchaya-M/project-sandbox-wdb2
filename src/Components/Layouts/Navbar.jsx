@@ -3,6 +3,7 @@ import Search from "../../assets/search_w.svg";
 import Heart from "../../assets/heart_w.svg";
 import Person from "../../assets/person_w.svg";
 import Cart from "../../assets/cart_w.svg";
+import Hamburger from "../../assets/hamburger.svg";
 
 function Navbar() {
   return (
@@ -10,16 +11,18 @@ function Navbar() {
       {/* Container */}
       <div className="container mx-auto flex items-center justify-between py-2.5">
         {/* Left panel */}
-        <div className="flex items-center gap-x-10">
+        <div className="flex items-center gap-x-2 sx:gap-x-10">
           {/* Logo Container */}
-          <div className="">
+          <div className="flex gap-x-4">
+            {/* Hamburger Icon */}
+            <img className="flex sx:hidden" src={Hamburger} alt="Hamburger" />
             {/* Logo Image */}
             <img src="/images/nav-logo-white.png" alt="Logo" />
           </div>
 
           {/* Menu Container */}
           <div className="">
-            <ul className="hidden sm:flex gap-x-6">
+            <ul className="hidden sx:flex gap-x-6">
               <li>Men</li>
               <li>Women</li>
               <li>Kids</li>
@@ -32,18 +35,18 @@ function Navbar() {
         {/* Right panel */}
         <div className="flex">
           {/* Cart */}
-          <ul className="flex gap-x-6">
+          <ul className="flex items-center gap-x-6">
             <li className="">
-              <img src={Search} alt="Search" />
+              <img src={Search} alt="Search" className="h-5" />
             </li>
             <li>
-              <img src={Heart} alt="Heart" />
+              <img src={Heart} alt="Heart" className="h-5" />
             </li>
             <li>
-              <img src={Person} alt="Person" />
+              <img src={Person} alt="Person" className="h-5" />
             </li>
             <li>
-              <img src={Cart} alt="Cart" />
+              <img src={Cart} alt="Cart" className="h-5" />
             </li>
           </ul>
         </div>

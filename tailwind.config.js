@@ -7,12 +7,12 @@ export default {
         poppins: ["Poppins", "sans-serif"],
       },
       container: {
-        padding: "2rem",
-        screens: {
-          // sm: "1500px",
-          // md: "1500px",
-          lg: "90vw",
-        },
+        padding: "8px",
+        //   screens: {
+        //     // sm: "1500px",
+        //     // md: "1500px",
+        //     lg: "90vw",
+        //   },
       },
       colors: {
         limeGreen: {
