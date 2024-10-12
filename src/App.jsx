@@ -42,7 +42,12 @@ function App() {
         <div className="absolute bottom-0 text-center w-full p-4 text-white bg-gradient-to-t from-black/80 to-black/0">
           <p className="mb-4 text-[24px] font-bold">{item.title}</p>
           <p className="mb-4 text-[16px]">{item.description}</p>
-          <button className="bg-black p-4">View more</button>
+          <a
+            href="#"
+            className="inline-block bg-black p-4 hover:bg-black/75 active:bg-black"
+          >
+            View more
+          </a>
         </div>
       </div>
     ));
@@ -55,7 +60,7 @@ function App() {
       </div>
 
       {/* Collections */}
-      <div className="grid grid-cols-3 gap-x-10 my-24">
+      <div className="grid sm:grid-cols-3 gap-x-10 gap-y-5 my-24">
         <div className="mb-6">
           <div className="">
             <p className="text-[96px] leading-[116px] font-bold">2024</p>
@@ -82,7 +87,7 @@ function App() {
       <div className="my-24 text-center">
         <p className="font-bold text-[32px]">Featured Products</p>
 
-        <div className="mt-16 grid grid-cols-4">
+        <div className="mt-16 grid sm:grid-cols-4 gap-y-8 gap-x-8">
           <div className="">1</div>
           <div className="">1</div>
           <div className="">1</div>
