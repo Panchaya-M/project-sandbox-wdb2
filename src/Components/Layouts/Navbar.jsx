@@ -1,9 +1,23 @@
-import BasketEmpty from "../../assets/basket-empty.svg";
+import { Link } from "react-router-dom";
+
+// import BasketEmpty from "../../assets/basket-empty.svg";
 import Search from "../../assets/search_w.svg";
 import Heart from "../../assets/heart_w.svg";
 import Person from "../../assets/person_w.svg";
 import Cart from "../../assets/cart_w.svg";
 import Hamburger from "../../assets/hamburger.svg";
+
+function getLink(category) {
+  return `/category/${category}`;
+}
+
+const FixedMenuItems = [
+  { name: "Men", link: "men" },
+  { name: "Women", link: "women" },
+  { name: "Kids", link: "kids" },
+  { name: "Shoes", link: "shoes" },
+  { name: "Accessories", link: "accessories" },
+];
 
 function Navbar() {
   return (
@@ -23,11 +37,11 @@ function Navbar() {
           {/* Menu Container */}
           <div className="">
             <ul className="hidden sx:flex gap-x-6">
-              <li>Men</li>
-              <li>Women</li>
-              <li>Kids</li>
-              <li>Shoes</li>
-              <li>Accessories</li>
+              {FixedMenuItems.map((item, index) => (
+                <li key={`nav-item-${index}`}>
+                  <Link to={getLink(item.link)}>{item.name}</Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>

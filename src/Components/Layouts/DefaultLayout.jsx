@@ -3,7 +3,7 @@ import Footer from "./Footer";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 
-function Layouts({ children }) {
+function DefaultLayout({ children }) {
   return (
     <>
       <Navbar />
@@ -14,4 +14,4 @@ function Layouts({ children }) {
   );
 }
 
-export default Layouts;
+export default DefaultLayout;
