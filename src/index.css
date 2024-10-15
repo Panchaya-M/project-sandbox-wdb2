@@ -13,3 +13,7 @@ body {
 .btn {
   @apply px-2.5 py-[7px] text-bodyText flex flex-row justify-center items-center;
 }
+
+.percent-discount {
+  @apply px-2.5 py-2 bg-danger text-bodyText text-white
+}
