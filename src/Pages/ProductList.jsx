@@ -81,7 +81,7 @@ const Sort = (props) => {
 
   return (
     <div className="flex flex-row justify-end relative">
-      <div
+      <button
         onClick={() => setIsOpen(!isOpen)}
         className={`top-0 right-0 flex justify-between items-center px-2.5 py-4 border hover:border-limeGreen ${
           isOpen ? "border-limeGreen" : "border-transparent"
@@ -89,7 +89,7 @@ const Sort = (props) => {
       >
         <p className="text-sm">Sort by</p>
         <img src={Arrow} alt="Arrow Down" className="pl-5" />
-      </div>
+      </button>
 
       <div
         className={`absolute top-[100%] right-0 grid whitespace-nowrap mt-1 p-6 gap-y-6 border border-grey-300 bg-white ${
@@ -98,19 +98,15 @@ const Sort = (props) => {
       >
         {sortOptions.map((option) => {
           return (
-            <div key={`sort-option-${option.value}`} className="">
+            <button key={`sort-option-${option.value}`} className="block w-full text-left flex justify-start items-center gap-x-4" onClick={() => onChangeSort(option.value)}>
               {/* radio button */}
-              <input
-                type="radio"
-                id={option.value}
-                name="sort"
-                value={option.value}
-                className="mr-2 bg-limeGreen"
-                checked={selected === option.value}
-                onClick={() => onChangeSort(option.value)}
-              />
+              <div className="w-6 h-6 block bg-white border-2 border-limeGreen rounded-full overflow-hidden p-1 inline-block">
+                { selected === option.value && (<div className="w-full h-full bg-limeGreen rounded-full"/>)}
+                
+              </div>
+
               <span className="text-sm">{option.name}</span>
-            </div>
+            </button>
           );
         })}
       </div>
@@ -124,7 +120,7 @@ const ProductListPage = () => {
 
   return (
     <DefaultLayout>
-      <div className="container mx-auto">
+      <div className="container mx-auto my-24">
         <div className="grid grid-cols-4 gap-x-10">
           <div className="col-span-1">
             {/* Filter */}
@@ -147,7 +143,7 @@ const ProductListPage = () => {
             </div>
 
             {/* Products */}
-            <div className="grid md:grid-cols-3 gap-x-10 gap-y-10 mt-10 mb-16">
+            <div className="grid md:grid-cols-3 gap-x-10 gap-y-10 mt-10">
               <div className="">Product_1</div>
               <div className="">Product_1</div>
               <div className="">Product_1</div>
