@@ -16,7 +16,7 @@ export async function getCollection() {
   return [];
 }
 
-export async function getProductByCatrgory(
+export async function getProductByCategory(
   categories = [],
   fieldName = "name",
   sort = "asc"
@@ -24,11 +24,11 @@ export async function getProductByCatrgory(
   const categoriesQuery = categories.join(",");
 
   const result = await axios.get(
-    `https://api.storefront.wdb.skooldio.dev/products?categories=${categoriesQuery}&sort=${fieldName}:${sort}`
+    `https://api.storefront.wdb.skooldio.dev/products?${ categoriesQuery === '' ? '' : `categories=${categoriesQuery}` }&sort=${fieldName}:${sort}`
   );
 
-  if (Array.isArray(result.data) && result.data.length > 0) {
-    return result.data;
+  if (result.data && Array.isArray(result.data.data) && result.data.data.length > 0) {
+    return result.data.data;
   }
 
   return [];

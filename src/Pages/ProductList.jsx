@@ -1,59 +1,76 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import DefaultLayout from "../Components/Layouts/DefaultLayout";
 import Arrow from "../assets/arrow_down.svg";
+import {getAllCategory, getProductByCategory} from '../api';
+import {ProductCard} from '../Components';
 
-const filterGroup = [
-  {
-    name: "Tops",
-    items: [
-      { name: "All items", link: "" },
-      { name: "T-Shirts", link: "t-shirt" },
-      { name: "Cardigans", link: "cardigans" },
-      // { name: "Knitwear & Sweaters", link: "knitwear" },
-      // { name: "Sweatshirts & Hoodies", link: "sweatshirt" },
-      // { name: "Fleece", link: "fleece" },
-    ],
-    // name: "Bottoms",
-    // items: [
-    //   { name: "All items", link: "" },
-    //   { name: "T-Shirts", link: "t-shirt" },
-    // ],
-  },
-];
-
-const Filter = () => {
+/**
+ * 
+ * @param { categories: {
+ *  name: string,
+ *  permalink: string
+ *   children: {
+ *    id: string,
+ *    name: string,
+ *    permalink: string
+ *  }[]
+ * }[]
+ * } props
+ * 
+ * @param (permalink: string) onSelectFilter
+ * @returns 
+ */
+const Filter = ({ categories, onSelectFilter }) => {
   const [selected, setSelected] = useState("");
 
+  // On select filter
+  function onSelect(id, permalink) {
+    setSelected(id);
+
+    // Redirect to category page
+    if (typeof onSelectFilter === "function") {
+      onSelectFilter(permalink);
+    }
+  }
+
+  // List filter item
   const listFilterItem = (items) => {
     return items.map((item) => {
       return (
-        <div
-          key={`filter-item-${item.name}`}
-          className={`${selected === item.name ? "bg-limeGreen" : ""} p-2.5`}
+        <button
+          key={`filter-item-${item.id}`}
+          className={`${selected === item.id ? "bg-limeGreen" : ""} p-2.5 text-sm block w-full text-left`}
+          onClick={() => onSelect(item.id, item.permalink)}
         >
-          <p className="text-sm" onClick={() => setSelected(item.name)}>
-            {item.name}
-          </p>
-        </div>
+          {item.name}
+        </button>
       );
     });
   };
 
+  // List filter group
   const listFilterGroup = () => {
-    return filterGroup.map((group) => {
+    return categories.map((category) => {
       return (
-        <div key={`group-${group.name}`}>
+        <div key={`group-${category.name}`}>
           <div className="">
-            <p className="text-lg font-semibold py-3">{group.name}</p>
+            <p className="text-lg font-semibold py-3">{category.name}</p>
           </div>
-          <div className="">{listFilterItem(group.items)}</div>
+          <div className="">{listFilterItem(category.children)}</div>
         </div>
       );
     });
   };
 
+  // If categories is undefined
+  // Show loading
+  if (categories === undefined) {
+    return <div>Loading...</div>;
+  }
+
+  // Otherwise, show filter
   return <div>{listFilterGroup()}</div>;
 };
 
@@ -63,6 +80,11 @@ const sortOptions = [
   { name: "Best seller", value: "best-seller" },
 ];
 
+/**
+ * 
+ * @param {onChangeSort: (value: string) => void} props
+ * @returns
+  */
 const Sort = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState("price-asc");
@@ -91,8 +113,9 @@ const Sort = (props) => {
         <img src={Arrow} alt="Arrow Down" className="pl-5" />
       </button>
 
+      {/* Sort options */}
       <div
-        className={`absolute top-[100%] right-0 grid whitespace-nowrap mt-1 p-6 gap-y-6 border border-grey-300 bg-white ${
+        className={`absolute top-[100%] right-0 grid whitespace-nowrap mt-1 p-6 gap-y-6 border border-grey-300 bg-white z-10 ${
           isOpen ? "" : "hidden"
         }`}
       >
@@ -114,9 +137,96 @@ const Sort = (props) => {
   );
 };
 
+// ========================================================================================================
+// Main component
 const ProductListPage = () => {
   const params = useParams();
-  const [sortBy, setSortBy] = useState("price-asc");
+  const [sortBy, setSortBy] = useState(["price", "asc"]);
+  const [categories, setCategories] = useState({});
+  const [products, setProducts] = useState([]);
+
+  const [selectedPermalink, setSelectedPermalink] = useState(null);
+
+  useEffect(() => {
+    _getAllCategories()
+    _getProductByCategory()
+  }, [sortBy, selectedPermalink])
+
+  // Create category list
+  function createCategoryList(fetchedCategories) {
+    let _categories = {}
+
+    // Add to parent category
+    function addToParentCategory(parentId, category) {
+      if (!_categories[parentId]) {
+        createParentCategory(parentId)
+      }
+      _categories[parentId].children.push(category)
+    }
+
+    // Create category
+    function createCategory(category) {
+      return {
+        id: category.id,
+        name: category.name,
+        permalink: category.permalink,
+      }
+    }
+
+    // Create parent category
+    function createParentCategory(categoryId, category = {}) {
+      _categories = {
+        ..._categories,
+        [categoryId]: {
+          ...category,
+          children: [],
+        }
+      }
+    }
+
+    // Create categories
+    fetchedCategories.forEach((category) => {
+      // Check if category is parent
+      if (category.parentId === null) {
+        createParentCategory(category.id, createCategory(category))
+      } else {
+        // Add to parent category
+        addToParentCategory(category.parentId, createCategory(category))
+      }
+    })
+
+    return _categories;
+  }
+
+  async function _getAllCategories() {
+    const result = await getAllCategory()
+
+    setCategories(createCategoryList(result))
+  }
+
+  async function _getProductByCategory() {
+    const result = await getProductByCategory(selectedPermalink === null ? [] : [selectedPermalink], sortBy[0], sortBy[1])
+    
+    setProducts(result)
+  }
+
+  function onSelectFilter(permalink) {
+    setSelectedPermalink(permalink)
+  }
+
+  function onSort(sortBy) {
+    switch (sortBy) {
+      case "price-asc":
+        setSortBy(["price", "asc"])
+        break
+      case "price-desc":
+        setSortBy(["price", "desc"])
+        break
+      case "best-seller":
+        // setSortField("best-seller")
+        break
+    }
+  }
 
   return (
     <DefaultLayout>
@@ -124,7 +234,7 @@ const ProductListPage = () => {
         <div className="grid grid-cols-4 gap-x-10">
           <div className="col-span-1">
             {/* Filter */}
-            <Filter />
+            <Filter categories={Object.values(categories)} onSelectFilter={onSelectFilter} />
           </div>
 
           <div className="md:col-span-3">
@@ -135,8 +245,8 @@ const ProductListPage = () => {
               </div>
               <div className="md:col-span-1">
                 <Sort
-                  onChangeSort={(s) => {
-                    setSortBy(s);
+                  onChangeSort={(sort) => {
+                    onSort(sort)
                   }}
                 />
               </div>
@@ -144,10 +254,22 @@ const ProductListPage = () => {
 
             {/* Products */}
             <div className="grid md:grid-cols-3 gap-x-10 gap-y-10 mt-10">
-              <div className="">Product_1</div>
-              <div className="">Product_1</div>
-              <div className="">Product_1</div>
-              <div className="">Product_1</div>
+              {
+                products.map((product) => (
+                  <ProductCard
+                    name={product.name}
+                    description={product.description}
+                    image={product.imageUrls.length > 0 ? product.imageUrls[0] : ''}
+                    rating={product.ratings}
+                    price={product.price}
+                    promotionPrice={product.promotionalPrice !== undefined ? product.promotionalPrice : 0}
+                    isPromotion={product.promotionalPrice !== undefined}
+                    // price={390}
+                    // promotionPrice={290}
+                    // isPromotion={true}
+                  />
+                ))
+              }
             </div>
           </div>
         </div>
