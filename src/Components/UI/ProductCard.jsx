@@ -1,9 +1,5 @@
 /* eslint-disable react/prop-types */
-import Star from "../../assets/star.svg";
-import StarGreen from "../../assets/star-green.svg";
 import Ratings from "./Ratings";
-
-const fullRating = 5;
 
 function ProductCard({
   name,
