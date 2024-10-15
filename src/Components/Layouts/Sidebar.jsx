@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import ArrowRight from "../../src/assets/arrow_right.svg";
-import ArrowLeft from "../../src/assets/arrow_left.svg";
+import ArrowRight from "../../assets/arrow_right.svg";
+import ArrowLeft from "../../assets/arrow_left.svg";
 
 function Sidebar() {
   const [selectedItem, setSelectedItem] = useState(null);
