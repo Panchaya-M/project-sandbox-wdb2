@@ -3,11 +3,11 @@ import { useParams } from "react-router-dom";
 
 import DefaultLayout from "../Components/Layouts/DefaultLayout";
 import Arrow from "../assets/arrow_down.svg";
-import {getAllCategory, getProductByCategory} from '../api';
-import {ProductCard} from '../Components';
+import { getAllCategory, getProductByCategory } from "../api";
+import { ProductCard } from "../Components";
 
 /**
- * 
+ *
  * @param { categories: {
  *  name: string,
  *  permalink: string
@@ -18,9 +18,9 @@ import {ProductCard} from '../Components';
  *  }[]
  * }[]
  * } props
- * 
+ *
  * @param (permalink: string) onSelectFilter
- * @returns 
+ * @returns
  */
 const Filter = ({ categories, onSelectFilter }) => {
   const [selected, setSelected] = useState("");
@@ -41,7 +41,9 @@ const Filter = ({ categories, onSelectFilter }) => {
       return (
         <button
           key={`filter-item-${item.id}`}
-          className={`${selected === item.id ? "bg-limeGreen" : ""} p-2.5 text-sm block w-full text-left`}
+          className={`${
+            selected === item.id ? "bg-limeGreen" : ""
+          } p-2.5 text-sm block w-full text-left`}
           onClick={() => onSelect(item.id, item.permalink)}
         >
           {item.name}
@@ -81,10 +83,10 @@ const sortOptions = [
 ];
 
 /**
- * 
+ *
  * @param {onChangeSort: (value: string) => void} props
  * @returns
-  */
+ */
 const Sort = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState("price-asc");
@@ -121,11 +123,16 @@ const Sort = (props) => {
       >
         {sortOptions.map((option) => {
           return (
-            <button key={`sort-option-${option.value}`} className="block w-full text-left flex justify-start items-center gap-x-4" onClick={() => onChangeSort(option.value)}>
+            <button
+              key={`sort-option-${option.value}`}
+              className="block w-full text-left flex justify-start items-center gap-x-4"
+              onClick={() => onChangeSort(option.value)}
+            >
               {/* radio button */}
               <div className="w-6 h-6 block bg-white border-2 border-limeGreen rounded-full overflow-hidden p-1 inline-block">
-                { selected === option.value && (<div className="w-full h-full bg-limeGreen rounded-full"/>)}
-                
+                {selected === option.value && (
+                  <div className="w-full h-full bg-limeGreen rounded-full" />
+                )}
               </div>
 
               <span className="text-sm">{option.name}</span>
@@ -148,20 +155,20 @@ const ProductListPage = () => {
   const [selectedPermalink, setSelectedPermalink] = useState(null);
 
   useEffect(() => {
-    _getAllCategories()
-    _getProductByCategory()
-  }, [sortBy, selectedPermalink])
+    _getAllCategories();
+    _getProductByCategory();
+  }, [sortBy, selectedPermalink]);
 
   // Create category list
   function createCategoryList(fetchedCategories) {
-    let _categories = {}
+    let _categories = {};
 
     // Add to parent category
     function addToParentCategory(parentId, category) {
       if (!_categories[parentId]) {
-        createParentCategory(parentId)
+        createParentCategory(parentId);
       }
-      _categories[parentId].children.push(category)
+      _categories[parentId].children.push(category);
     }
 
     // Create category
@@ -170,7 +177,7 @@ const ProductListPage = () => {
         id: category.id,
         name: category.name,
         permalink: category.permalink,
-      }
+      };
     }
 
     // Create parent category
@@ -180,51 +187,55 @@ const ProductListPage = () => {
         [categoryId]: {
           ...category,
           children: [],
-        }
-      }
+        },
+      };
     }
 
     // Create categories
     fetchedCategories.forEach((category) => {
       // Check if category is parent
       if (category.parentId === null) {
-        createParentCategory(category.id, createCategory(category))
+        createParentCategory(category.id, createCategory(category));
       } else {
         // Add to parent category
-        addToParentCategory(category.parentId, createCategory(category))
+        addToParentCategory(category.parentId, createCategory(category));
       }
-    })
+    });
 
     return _categories;
   }
 
   async function _getAllCategories() {
-    const result = await getAllCategory()
+    const result = await getAllCategory();
 
-    setCategories(createCategoryList(result))
+    setCategories(createCategoryList(result));
   }
 
   async function _getProductByCategory() {
-    const result = await getProductByCategory(selectedPermalink === null ? [] : [selectedPermalink], sortBy[0], sortBy[1])
-    
-    setProducts(result)
+    const result = await getProductByCategory(
+      selectedPermalink === null ? [] : [selectedPermalink],
+      sortBy[0],
+      sortBy[1]
+    );
+
+    setProducts(result);
   }
 
   function onSelectFilter(permalink) {
-    setSelectedPermalink(permalink)
+    setSelectedPermalink(permalink);
   }
 
   function onSort(sortBy) {
     switch (sortBy) {
       case "price-asc":
-        setSortBy(["price", "asc"])
-        break
+        setSortBy(["price", "asc"]);
+        break;
       case "price-desc":
-        setSortBy(["price", "desc"])
-        break
+        setSortBy(["price", "desc"]);
+        break;
       case "best-seller":
-        // setSortField("best-seller")
-        break
+        setSortBy(["ratings", "desc"]);
+        break;
     }
   }
 
@@ -234,19 +245,22 @@ const ProductListPage = () => {
         <div className="grid grid-cols-4 gap-x-10">
           <div className="col-span-1">
             {/* Filter */}
-            <Filter categories={Object.values(categories)} onSelectFilter={onSelectFilter} />
+            <Filter
+              categories={Object.values(categories)}
+              onSelectFilter={onSelectFilter}
+            />
           </div>
 
           <div className="md:col-span-3">
             <div className="grid grid-cols-5">
               <div className="md:col-span-4">
-                <h1 className="text-3xl font-bold">Woman's Clothing</h1>
-                <p>Sort by: {sortBy}</p>
+                <h1 className="text-3xl font-bold">{`{{collection.name}}`} Clothing</h1>
+                {/* <p>Sort by: {sortBy}</p> */}
               </div>
               <div className="md:col-span-1">
                 <Sort
                   onChangeSort={(sort) => {
-                    onSort(sort)
+                    onSort(sort);
                   }}
                 />
               </div>
@@ -254,22 +268,26 @@ const ProductListPage = () => {
 
             {/* Products */}
             <div className="grid md:grid-cols-3 gap-x-10 gap-y-10 mt-10">
-              {
-                products.map((product) => (
-                  <ProductCard
-                    name={product.name}
-                    description={product.description}
-                    image={product.imageUrls.length > 0 ? product.imageUrls[0] : ''}
-                    rating={product.ratings}
-                    price={product.price}
-                    promotionPrice={product.promotionalPrice !== undefined ? product.promotionalPrice : 0}
-                    isPromotion={product.promotionalPrice !== undefined}
-                    // price={390}
-                    // promotionPrice={290}
-                    // isPromotion={true}
-                  />
-                ))
-              }
+              {products.map((product) => (
+                <ProductCard
+                  name={product.name}
+                  description={product.description}
+                  image={
+                    product.imageUrls.length > 0 ? product.imageUrls[0] : ""
+                  }
+                  rating={product.ratings}
+                  price={product.price}
+                  promotionPrice={
+                    product.promotionalPrice !== undefined
+                      ? product.promotionalPrice
+                      : undefined
+                  }
+                  isPromotion={product.promotionalPrice !== product.price}
+                  // price={390}
+                  // promotionPrice={290}
+                  // isPromotion={true}
+                />
+              ))}
             </div>
           </div>
         </div>
