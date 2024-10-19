@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { getProductDetail } from "../api";
 
 import DefaultLayout from "../Components/Layouts/DefaultLayout";
-import { Button, Ratings, SecondaryButton } from "../Components";
+import { Button, Ratings, SecondaryButton, SimilarProducts } from "../Components";
 
 import Heart from "../assets/heart.svg";
 import Arrow from "../assets/arrow_down.svg";
@@ -290,6 +290,9 @@ function ProductDetail() {
           </div>
         </div>
       )}
+
+
+      <SimilarProducts />
     </DefaultLayout>
   );
 }
