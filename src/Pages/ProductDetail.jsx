@@ -27,7 +27,12 @@ const quantityOptions = [
   { name: "5", value: 5 },
 ];
 
-const PriceDisplay = ({ price, promotionPrice, isPromotion = false }) => {
+const PriceDisplay = ({
+  price,
+  promotionPrice,
+  isPromotion = false,
+  isOutOfStock = false,
+}) => {
   const formatPrice = value => {
     return Number(value)
       .toFixed(2)
@@ -44,6 +49,16 @@ const PriceDisplay = ({ price, promotionPrice, isPromotion = false }) => {
           THB {formatPrice(promotionPrice)}
         </span>
       </div>
+
+      {isOutOfStock ? (
+        <div className="text-danger text-h6Bold mt-2">
+          Out of Stock
+        </div>
+      ) : isPromotion ? (
+        <div className="text-black-900 text-subHeading mt-4">
+          From <del>THB {formatPrice(price)}</del>
+        </div>
+      ) : null}
 
       {isPromotion ? (
         <div className="text-black-900 text-subHeading mt-4">
@@ -103,9 +118,8 @@ function ProductDetail() {
     setProductColors(colors ?? []);
     setSelectedColor(colors[0].color);
 
-    const checkRemains = product?.variants.every((item) => item.remains === 0);
+    const checkRemains = product?.variants.every(item => item.remains === 0);
     setIsOutOfStock(checkRemains);
-
   }, [product]);
 
   useEffect(() => {
@@ -153,6 +167,7 @@ function ProductDetail() {
               price={product.price}
               promotionPrice={product.promotionalPrice}
               isPromotion={product.promotionalPrice < product.price}
+              isOutOfStock={isOutOfStock}
             />
 
             {/* rating */}
@@ -212,7 +227,7 @@ function ProductDetail() {
             <VariantSection sectionName="Qty.">
               <div className="w-1/4 pr-2 relative">
                 <SecondaryButton
-                  text={quantity}
+                  text={isOutOfStock ? "Out of Stock" : quantity}
                   icon={Arrow}
                   onClick={() => setIsOpenQtyOptions(!isOpenQtyOptions)}
                   customClassName="w-full"
@@ -221,7 +236,11 @@ function ProductDetail() {
                     paddingRight: "20px",
                   }}
                   customIconStyle={{ width: "14px" }}
-                  disabled={!selectedProduct || selectedProduct?.remains === 0 || isOutOfStock}
+                  disabled={
+                    !selectedProduct ||
+                    selectedProduct?.remains === 0 ||
+                    isOutOfStock
+                  }
                 />
 
                 {/* Quantity options */}
