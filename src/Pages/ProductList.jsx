@@ -229,7 +229,7 @@ const ProductListPage = () => {
   }
 
   return (
-    <DefaultLayout>
+    <>
       <div className="container mx-auto my-24">
         <div className="grid grid-cols-4 gap-x-10">
           <div className="col-span-1">
@@ -264,6 +264,7 @@ const ProductListPage = () => {
                     price={product.price}
                     promotionPrice={product.promotionalPrice !== undefined ? product.promotionalPrice : 0}
                     isPromotion={product.promotionalPrice !== undefined}
+                    permalink={product.permalink}
                     // price={390}
                     // promotionPrice={290}
                     // isPromotion={true}
@@ -274,7 +275,7 @@ const ProductListPage = () => {
           </div>
         </div>
       </div>
-    </DefaultLayout>
+    </>
   );
 };
 

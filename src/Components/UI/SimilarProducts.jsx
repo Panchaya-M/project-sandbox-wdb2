@@ -84,7 +84,7 @@ const mockupProduct = [
 
 function SimilarProducts() {
   return (
-    <div className="container mx-auto my-24">
+    <div className="container mx-auto mb-24">
       <p className="font-bold text-[32px]">People also like these</p>
 
       <div className="mt-16 grid grid-cols-1 md:grid-cols-4 gap-10">
@@ -98,6 +98,7 @@ function SimilarProducts() {
             price={product.price}
             promotionPrice={product.promotionalPrice}
             isPromotion={product.promotionalPrice < product.price}
+            permalink={product.permalink}
           />
         ))}
       </div>

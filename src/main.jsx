@@ -5,19 +5,30 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import ProductListPage from "./Pages/ProductList.jsx";
 import ProductDetailPage from "./Pages/ProductDetail.jsx";
+import DefaultLayout from "./Components/Layouts/DefaultLayout.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
-  },
-  {
-    path: "/category/:category",
-    element: <ProductListPage />,
-  },
-  {
-    path: "/products/:permalink",
-    element: <ProductDetailPage />,
+    element: <DefaultLayout />,
+    children: [
+      {
+        path: "/",
+        element: <App />,
+      },
+      {
+        path: "/products",
+        element: <ProductListPage />,
+      },
+      {
+        path: "/products/:permalink",
+        element: <ProductDetailPage />,
+      },
+      {
+        path: "/cart",
+        element: <h1>My Cart</h1>,
+      },
+    ],
   },
 ]);
 
