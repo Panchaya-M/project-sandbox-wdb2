@@ -10,10 +10,12 @@ function ProductCard({
   image,
   rating,
   price,
+  permalink,
   promotionPrice,
   isPromotion = false,
 }) {
-  const percentDiscount =  ((price - promotionPrice) / price) * 100;
+  const percentDiscount = (((price - promotionPrice) / price) * 100).toFixed(2);
+
   const goToProductDetail = () => {
     return location.pathname === "/products"
       ? `/${permalink}`
@@ -33,7 +35,7 @@ function ProductCard({
         {description}
       </p>
       <div className="mb-2">
-        <Ratings rating={rating}/>
+        <Ratings rating={rating} />
       </div>
       <div className="flex justify-end items-center gap-4">
         {isPromotion ? (
@@ -41,13 +43,21 @@ function ProductCard({
             <del>{price?.toLocaleString()}</del>
           </div>
         ) : null}
-        <div className={`text-h6Bold ${isPromotion ? 'text-danger' : 'text-black-900'}`}>
+        <div
+          className={`text-h6Bold ${
+            isPromotion ? "text-danger" : "text-black-900"
+          }`}
+        >
           THB {promotionPrice?.toLocaleString()}
         </div>
       </div>
 
       {/* discount */}
-      { percentDiscount > 0 ? <div className="absolute top-6 right-0 percent-discount">- {percentDiscount}%</div> : null}
+      {percentDiscount > 0 ? (
+        <div className="absolute top-6 right-0 percent-discount">
+          - {percentDiscount}%
+        </div>
+      ) : null}
     </div>
   );
 }
