@@ -4,6 +4,7 @@ import App from "./App.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import ProductListPage from "./Pages/ProductList.jsx";
+import ProductDetailPage from "./Pages/ProductDetail.jsx";
 
 const router = createBrowserRouter([
   {
@@ -13,6 +14,10 @@ const router = createBrowserRouter([
   {
     path: "/category/:category",
     element: <ProductListPage />,
+  },
+  {
+    path: "/products/:permalink",
+    element: <ProductDetailPage />,
   },
 ]);
 
