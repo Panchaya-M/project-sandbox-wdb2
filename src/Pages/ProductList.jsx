@@ -229,7 +229,7 @@ const ProductListPage = () => {
   }
 
   return (
-    <DefaultLayout>
+    <>
       <div className="container mx-auto my-24">
         <div className="grid grid-cols-4 gap-x-10">
           <div className="col-span-1">
@@ -274,7 +274,7 @@ const ProductListPage = () => {
           </div>
         </div>
       </div>
-    </DefaultLayout>
+    </>
   );
 };
 
