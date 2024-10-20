@@ -1,5 +1,8 @@
 /* eslint-disable react/prop-types */
 import Ratings from "./Ratings";
+import { Link, useLocation } from "react-router-dom";
+
+const location = useLocation;
 
 function ProductCard({
   name,
