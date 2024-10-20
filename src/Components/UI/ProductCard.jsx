@@ -11,13 +11,21 @@ function ProductCard({
   isPromotion = false,
 }) {
   const percentDiscount =  ((price - promotionPrice) / price) * 100;
+  const goToProductDetail = () => {
+    return location.pathname === "/products"
+      ? `/${permalink}`
+      : `/products/${permalink}`;
+  };
 
   return (
     <div className="flex flex-col relative">
-      <div className="mb-4">
+      <Link to={goToProductDetail()} className="mb-4">
         <img src={image} alt={name} />
-      </div>
-      <h6 className="text-h6Bold truncate mb-2">{name}</h6>
+      </Link>
+      <Link to={goToProductDetail()}>
+        <h6 className="text-h6Bold truncate mb-2">{name}</h6>
+      </Link>
+      
       <p className="text-bodyText text-black-700 truncate mb-2">
         {description}
       </p>

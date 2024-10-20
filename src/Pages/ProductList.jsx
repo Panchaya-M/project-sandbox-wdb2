@@ -264,6 +264,7 @@ const ProductListPage = () => {
                     price={product.price}
                     promotionPrice={product.promotionalPrice !== undefined ? product.promotionalPrice : 0}
                     isPromotion={product.promotionalPrice !== undefined}
+                    permalink={product.permalink}
                     // price={390}
                     // promotionPrice={290}
                     // isPromotion={true}
