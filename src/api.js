@@ -53,3 +53,12 @@ export async function getAllCategory() {
 
   return [];
 }
+
+/*
+get product detail
+*/
+export async function getProductDetail(permalink) {
+  const result = await axios.get("https://api.storefront.wdb.skooldio.dev/products/" + permalink) 
+
+  return result.data;
+}

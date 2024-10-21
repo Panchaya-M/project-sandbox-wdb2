@@ -161,8 +161,7 @@ function HomePage() {
           <p className="font-bold text-[32px] text-center">Featured Products</p>
 
           <div className="mt-16 grid grid-cols-1 md:grid-cols-4 gap-10">
-          {
-            mockupProduct.map((product) => (
+            {mockupProduct.map(product => (
               <ProductCard
                 key={product.id}
                 name={product.name}
@@ -172,9 +171,9 @@ function HomePage() {
                 price={product.price}
                 promotionPrice={product.promotionalPrice}
                 isPromotion={product.promotionalPrice < product.price}
+                permalink={product.permalink}
               />
-            ))
-          }
+            ))}
           </div>
         </div>
       </div>

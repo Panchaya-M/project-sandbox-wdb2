@@ -1,6 +1,9 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import Button from "../UI/Button";
+import ChevronRightCircle from "../../assets/chevron-right-circle.svg"
+import SkooldioLogo from "../../assets/images/skooldio1.png"
+import webDevLogo from "../../assets/images/web-dev1.png"
 
 const Title = ({ title }) => {
   return <h6 className="font-bold mb-4 md:mb-6">{title}</h6>;
@@ -37,7 +40,7 @@ function Footer() {
 
   return (
     <footer className="bg-black text-white py-6">
-      <div className="wrapper grid grid-cols-1 md:grid-cols-3 gap-14 md:gap-[38px] 3xl:gap-[45px] mb-4 md:mb-4 text-center md:text-left">
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-14 md:gap-[38px] 3xl:gap-[45px] mb-4 md:mb-4 text-center md:text-left">
         <div>
           <Title title="Featured product" />
           <ul>
@@ -58,7 +61,7 @@ function Footer() {
           <div className="flex justify-center md:justify-start">
             <Button
               text="Sign up now"
-              icon="icons/chevron-right-circle.svg"
+              icon={ChevronRightCircle}
               className="bg-white text-black"
             />
           </div>
@@ -101,7 +104,7 @@ function Footer() {
           <div>
             <img
               className="h-[18px] w-auto"
-              src="images/skooldio1.png"
+              src={SkooldioLogo}
               alt="description of image"
             />
           </div>
@@ -109,7 +112,7 @@ function Footer() {
           <div>
             <img
               className="h-[18px] w-auto"
-              src="images/web-dev1.png"
+              src={webDevLogo}
               alt="description of image"
             />
           </div>

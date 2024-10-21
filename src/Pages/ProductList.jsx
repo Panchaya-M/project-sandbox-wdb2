@@ -240,7 +240,7 @@ const ProductListPage = () => {
   }
 
   return (
-    <DefaultLayout>
+    <>
       <div className="container mx-auto my-24">
         <div className="grid grid-cols-4 gap-x-10">
           <div className="col-span-1">
@@ -268,31 +268,28 @@ const ProductListPage = () => {
 
             {/* Products */}
             <div className="grid md:grid-cols-3 gap-x-10 gap-y-10 mt-10">
-              {products.map((product) => (
-                <ProductCard
-                  name={product.name}
-                  description={product.description}
-                  image={
-                    product.imageUrls.length > 0 ? product.imageUrls[0] : ""
-                  }
-                  rating={product.ratings}
-                  price={product.price}
-                  promotionPrice={
-                    product.promotionalPrice !== undefined
-                      ? product.promotionalPrice
-                      : undefined
-                  }
-                  isPromotion={product.promotionalPrice !== product.price}
-                  // price={390}
-                  // promotionPrice={290}
-                  // isPromotion={true}
-                />
-              ))}
+              {
+                products.map((product) => (
+                  <ProductCard
+                    name={product.name}
+                    description={product.description}
+                    image={product.imageUrls.length > 0 ? product.imageUrls[0] : ''}
+                    rating={product.ratings}
+                    price={product.price}
+                    promotionPrice={product.promotionalPrice !== undefined ? product.promotionalPrice : 0}
+                    isPromotion={product.promotionalPrice !== undefined}
+                    permalink={product.permalink}
+                    // price={390}
+                    // promotionPrice={290}
+                    // isPromotion={true}
+                  />
+                ))
+              }
             </div>
           </div>
         </div>
       </div>
-    </DefaultLayout>
+    </>
   );
 };
 

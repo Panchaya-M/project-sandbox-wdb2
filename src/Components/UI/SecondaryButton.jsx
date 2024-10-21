@@ -1,19 +1,19 @@
 /* eslint-disable react/prop-types */
-function Button({
+function SecondaryButton({
   type = "button",
   text,
   icon,
+  onClick,
   customClassName,
   customStyle,
   customIconStyle,
-  onClick,
-  disabled = false,
-  active = false,
+  disabled=false,
+  active=false
 }) {
   return (
     <button
       type={type}
-      className={`btn btn-primary ${customClassName} ${active ? 'btn-primary-active' : ''}`}
+      className={`btn btn-secondary ${customClassName} ${active ? 'btn-secondary-active' : ''}`}
       onClick={onClick}
       style={customStyle}
       disabled={disabled}
@@ -26,4 +26,4 @@ function Button({
   );
 }
 
-export default Button;
+export default SecondaryButton;
