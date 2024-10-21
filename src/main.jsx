@@ -6,6 +6,7 @@ import "./index.css";
 import ProductListPage from "./Pages/ProductList.jsx";
 import ProductDetailPage from "./Pages/ProductDetail.jsx";
 import DefaultLayout from "./Components/Layouts/DefaultLayout.jsx";
+import SummaryPage from "./Pages/SummaryPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -28,12 +29,16 @@ const router = createBrowserRouter([
         path: "/cart",
         element: <h1>My Cart</h1>,
       },
+      {
+        path: "/summary",
+        element: <SummaryPage />,
+      },
     ],
   },
 ]);
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />{" "}
+    <RouterProvider router={router} />
   </StrictMode>
 );
