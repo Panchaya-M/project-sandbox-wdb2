@@ -4,6 +4,8 @@ import Button from "../UI/Button";
 import ChevronRightCircle from "../../assets/chevron-right-circle.svg"
 import SkooldioLogo from "../../assets/images/skooldio1.png"
 import webDevLogo from "../../assets/images/web-dev1.png"
+import SecondaryButton from "../UI/SecondaryButton";
+import { Link } from "react-router-dom";
 
 const Title = ({ title }) => {
   return <h6 className="font-bold mb-4 md:mb-6">{title}</h6>;
@@ -22,19 +24,15 @@ function Footer() {
   const featuredProduct = [
     {
       name: "Men",
-      link: "",
+      link: "men",
     },
     {
-      name: "Ladies",
-      link: "",
+      name: "Women",
+      link: "women",
     },
     {
-      name: "Shoes",
-      link: "",
-    },
-    {
-      name: "Accessories",
-      link: "",
+      name: "Collections",
+      link: "collections",
     },
   ];
 
@@ -47,7 +45,7 @@ function Footer() {
             {featuredProduct.length
               ? featuredProduct.map((feature) => (
                   <li key={feature.name} className="text-subHeading mb-4">
-                    <a href={feature.link}>{feature.name}</a>
+                    <Link to={`/products/${feature.link}`}>{feature.name}</Link>
                   </li>
                 ))
               : null}
@@ -59,10 +57,9 @@ function Footer() {
           <Paragraph text="Sign up now and get 20% off your first purchase!" />
 
           <div className="flex justify-center md:justify-start">
-            <Button
+            <SecondaryButton
               text="Sign up now"
               icon={ChevronRightCircle}
-              className="bg-white text-black"
             />
           </div>
         </div>
@@ -89,7 +86,7 @@ function Footer() {
               <Button
                 type="submit"
                 text="Subscribe"
-                className="bg-limeGreen-700 text-black"
+                customStyle={{color: '#222222', backgroundColor: '#DEF81C'}}
               />
             </div>
           </form>
