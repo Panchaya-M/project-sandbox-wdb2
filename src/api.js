@@ -62,3 +62,20 @@ export async function getProductDetail(permalink) {
 
   return result.data;
 }
+
+export async function getAllProducts(
+  params
+) {
+
+  const result = await axios.get(
+    "https://api.storefront.wdb.skooldio.dev/products", {
+      params: params
+    }
+  );
+
+  if (result.data && Array.isArray(result.data.data) && result.data.data.length > 0) {
+    return result.data.data;
+  }
+
+  return [];
+}
