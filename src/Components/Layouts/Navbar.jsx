@@ -8,15 +8,13 @@ import Cart from "../../assets/cart_w.svg";
 import Hamburger from "../../assets/hamburger.svg";
 
 function getLink(category) {
-  return `/category/${category}`;
+  return `/products/${category}`;
 }
 
 const FixedMenuItems = [
   { name: "Men", link: "men" },
   { name: "Women", link: "women" },
-  { name: "Kids", link: "kids" },
-  { name: "Shoes", link: "shoes" },
-  { name: "Accessories", link: "accessories" },
+  { name: "Collections", link: "collections" },
 ];
 
 function Navbar() {
