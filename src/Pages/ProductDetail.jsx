@@ -11,13 +11,14 @@ import {
 
 import Heart from "../assets/heart.svg";
 import Arrow from "../assets/arrow_down.svg";
+import Loading from "../Components/UI/Loading";
 
 // Define the custom size order
 const sizeOrder = ["S", "M", "L", "XL"];
 
 // Sort the variants by size using the custom order
 const sortedVariantBySize = variants => {
-  return variants.sort(
+  return variants?.sort(
     (a, b) => sizeOrder.indexOf(a.size) - sizeOrder.indexOf(b.size)
   );
 };
@@ -90,8 +91,9 @@ function ProductDetail() {
   const [groupedValiantByColor, setGroupedValiantByColor] = useState(null);
 
   useEffect(() => {
+    setProduct(null);
     _getProductDetail();
-  }, []);
+  }, [permalink]);
 
   useEffect(() => {
     // Use an object to track unique colors with their color codes
@@ -140,7 +142,7 @@ function ProductDetail() {
 
   return (
     <>
-      {product && (
+      {product ? (
         <>
           <div className="container mx-auto mt-20 flex flex-col md:flex-row gap-10">
             <div className="flex-1">Carousel</div>
@@ -203,8 +205,8 @@ function ProductDetail() {
               <VariantSection sectionName="Size">
                 {groupedValiantByColor &&
                   sortedVariantBySize(
-                    groupedValiantByColor[selectedColor].items
-                  ).map((variant, index) => (
+                    groupedValiantByColor[selectedColor]?.items
+                  )?.map((variant, index) => (
                     <SecondaryButton
                       key={index}
                       text={variant.size || "Free Size"}
@@ -290,6 +292,8 @@ function ProductDetail() {
 
           <SimilarProducts category={product?.categories[0]} />
         </>
+      ) : (
+        <Loading />
       )}
     </>
   );

@@ -15,7 +15,6 @@ function SimilarProducts({category}) {
       categories: category || "",
     }
     const result = await getAllProducts(params);
-    console.log('result :>> ', result);
 
     setRelatedProducts(result);
   }
