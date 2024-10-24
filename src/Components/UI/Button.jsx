@@ -33,6 +33,7 @@ export function ButtonCustom({
   text,
   icon,
   customClassName,
+  customIconStyle,
   customStyle,
   onClick,
   disabled = false,
@@ -49,6 +50,9 @@ export function ButtonCustom({
       disabled={disabled}
     >
       {text}
+      <span className="h-10" style={customIconStyle}>
+        {icon && <img className="h-full w-auto ml-2" src={icon} />}
+      </span>
     </button>
   );
 }

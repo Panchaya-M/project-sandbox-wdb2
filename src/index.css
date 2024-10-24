@@ -31,7 +31,7 @@ body {
 }
 
 .btn-third {
-  @apply text-black-900 bg-white border border-black-300 hover:border-black-700 disabled:text-black-500 disabled:bg-black-100 disabled:border-black-300;
+  @apply text-black-900 bg-white border border-black-300 hover:bg-black-300 hover:text-white disabled:text-black-500 disabled:bg-black-100 disabled:border-black-300;
 }
 
 .btn-third-active {

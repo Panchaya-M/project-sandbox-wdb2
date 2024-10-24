@@ -24,7 +24,7 @@ import Button, { ButtonCustom } from "../Components/UI/Button.jsx";
 
 function ItemContainer() {
   return (
-    <div className="flex flex-col xl:w-[944px] xl:h-[838px] md:w-2/3  bg-white">
+    <div className="flex flex-col xxl:w-[944px] xxl:h-[838px] xl:w-[712px] xl:h-[725px] md:w-2/3  bg-white">
       {/* item text */}
       <p className="text-h6Bold mt-6 ml-6 mb-6 w-fit">Items</p>
       {/* item cart empty part */}
@@ -63,7 +63,7 @@ function ItemContainer() {
 
 function CartSummary() {
   return (
-    <div className="xl:w-[616px] xl:h-[464px] bg-white w-full md:w-1/3">
+    <div className="xxl:w-[616px] xxl:h-[464px] xl:w-[440px] xl:h-[464px] bg-white w-full md:w-1/3">
       <div className="flex flex-col mx-6 my-6 space-y-10">
         {/* detail */}
         <div className="flex flex-col justify-between gap-6">
@@ -137,10 +137,10 @@ export default function SummaryPage() {
     <>
       <div className="bg-black-50 pb-24">
         {/* Add padding-bottom here */}
-        <div className="container mx-auto min-h-screen">
+        <div className="containerNoPadding 4xl:mx-[472px] 3xl:mx-[160px] xxl:mx-[124px] mx-[16px]  min-h-screen">
           {/* Ensure the content takes at least full height */}
           <h1 className="text-h5Bold py-[41px] ml-6">My cart</h1>
-          <div className="flex flex-col md:flex-row gap-8">
+          <div className="flex flex-col md:flex-row sx:h-[343px] gap-8">
             <ItemContainer />
             <CartSummary />
           </div>
