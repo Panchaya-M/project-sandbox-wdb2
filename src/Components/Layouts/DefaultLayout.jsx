@@ -15,15 +15,28 @@ const ScrollToTop = () => {
   return null;
 };
 
+// function DefaultLayout() {
+//   return (
+//     <>
+//       <ScrollToTop />
+//       <Navbar />
+//       <Sidebar />
+//       <Outlet />
+//       <Footer />
+//     </>
+//   );
+// }
+
 function DefaultLayout() {
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <ScrollToTop />
       <Navbar />
-      <Sidebar />
-      <Outlet />
+      <div className="flex-grow">
+        <Outlet />
+      </div>
       <Footer />
-    </>
+    </div>
   );
 }
 
