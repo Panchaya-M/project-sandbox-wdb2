@@ -271,6 +271,7 @@ const ProductListPage = () => {
               {
                 products.map((product) => (
                   <ProductCard
+                    key={product.id}
                     name={product.name}
                     description={product.description}
                     image={product.imageUrls.length > 0 ? product.imageUrls[0] : ''}
