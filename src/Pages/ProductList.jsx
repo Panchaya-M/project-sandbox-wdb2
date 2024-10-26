@@ -126,7 +126,7 @@ const Sort = (props) => {
 
       {/* Sort options */}
       <div
-        className={`absolute top-[100%] right-0 grid whitespace-nowrap mt-1 p-6 gap-y-6 border border-grey-300 bg-white z-10 ${
+        className={`absolute top-[100%] right-0 grid whitespace-nowrap mt-1 p-6 gap-y-6 border border-grey-300 bg-white z-50 ${
           isOpen ? "" : "hidden"
         }`}
       >
@@ -168,12 +168,17 @@ const ProductListPage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setSelectedCategory(null);
+    setSelectedPermalink(null);
+  }, [params])
+
+  useEffect(() => {
     _getCategoryPageDetail();
-    _getProductByCategory();
   }, [sortBy, selectedPermalink, params]);
 
   useEffect(() => {
     _getChildrenCategories();
+    _getProductByCategory();
   }, [pageDetail]);
 
   // Create category list
@@ -310,18 +315,13 @@ const ProductListPage = () => {
             />
           </div>
 
-          <div className="md:col-span-3">
+          <div className="md:col-span-3 col-span-full">
             <div className="grid grid-cols-5">
               <div className="md:col-span-4">
                 <h1 className="text-3xl font-bold">{renderHeadingTitle()}</h1>
-                {/* <p>Sort by: {sortBy}</p> */}
               </div>
               <div className="md:col-span-1">
-                <Sort
-                  onChangeSort={(sort) => {
-                    onSort(sort);
-                  }}
-                />
+                <Sort onChangeSort={onSort} />
               </div>
             </div>
 
