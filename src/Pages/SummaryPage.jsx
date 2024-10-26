@@ -2,6 +2,8 @@
 import CardEmpty from "../assets/images/empty_cart.png";
 import Button, { ButtonCustom } from "../Components/UI/Button.jsx";
 import ProductCard from "../Components/UI/ProductCard";
+import Delete from "../assets/delete.svg";
+import Arrow from "../assets/arrow_down.svg";
 
 const mockupProduct = [
   {
@@ -85,11 +87,22 @@ const mockupProduct = [
   },
 ];
 
-function ItemContainer() {
+const VariantSection = ({ children, isEmpty }) => {
   return (
-    <div className="flex flex-col xxl:w-[944px] xxl:h-[838px] xl:w-[712px] xl:h-[725px] md:w-2/3  bg-white">
-      {/* item text */}
+    <div
+      className={`flex flex-col xxl:w-[944px] xl:w-[712px]  md:w-2/3  bg-white ${
+        isEmpty ? "xxl:h-[838px] xl:h-[725px]" : "h-full space-y-6"
+      }`}
+    >
       <p className="text-h6Bold mt-6 ml-6 mb-6 w-fit">Items</p>
+      {children}
+    </div>
+  );
+};
+
+function CartEmpty() {
+  return (
+    <>
       {/* item cart empty part */}
       <div className="flex flex-col justify-center items-center text-center space-y-6">
         <div>
@@ -109,18 +122,9 @@ function ItemContainer() {
         </div>
         <div>
           <Button text="Continue shopping"></Button>
-          {/* <button
-            type="button"
-            className={`btn btn-primary  ${fasle ? "btn-primary-active" : ""}`}
-            // onClick={onClick}
-            // style={customStyle}
-            // disabled={disabled}
-          >
-            Continue shopping
-          </button> */}
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -165,55 +169,102 @@ function CartSummary() {
           <ButtonCustom text="Continue shopping"></ButtonCustom>
         </div>
       </div>
+    </div>
+  );
+}
 
-      {/* <h2 className="text-xl font-semibold mb-4">Summary</h2>
-      <div className="bg-gray-100 rounded-lg p-6">
-        <div className="flex justify-between mb-2">
-          <span>0 items</span>
-          <span>0.00</span>
+function CartItem({ name, image, color, size, quantity, price }) {
+  return (
+    <div className="flex items-center space-x-4 py-6">
+      <img src={image} alt={name} className="w-[162px] h-[162px] " />
+      <div className="flex flex-col justify-between h-[162px] w-full">
+        <div className="flex justify-between items-start mb-10">
+          <h3 className="text-h6Bold">{name}</h3>
+          <button className="text-gray-400 hover:text-gray-600">
+            <img src={Delete} alt="Delete" className="w-[40px] h-[40px]" />
+          </button>
         </div>
-        <div className="flex justify-between mb-2">
-          <span>Subtotal</span>
-          <span>0.00</span>
+        <div className="flex justify-between">
+          <div className="grid grid-cols-3 gap-2">
+            <div>
+              <p className="text-sm text-gray-500 mb-1">Color</p>
+              <SelectBox value={color} />
+            </div>
+            <div>
+              <p className="text-sm text-gray-500 mb-1">Size</p>
+              <SelectBox value={size} />
+            </div>
+            <div>
+              <p className="text-sm text-gray-500 mb-1">Qty.</p>
+              <SelectBox value={quantity.toString()} />
+            </div>
+          </div>
+          <div className="text-right content-end">
+            <p className="text-subHeading">THB {price.toFixed(2)}</p>
+          </div>
         </div>
-        <div className="flex justify-between mb-2">
-          <span>Shipping fee</span>
-          <span>0.00</span>
-        </div>
-        <div className="flex justify-between font-bold mt-4 pt-4 border-t">
-          <span>Total</span>
-          <span>0.00</span>
-        </div>
-        <button variant="default" className="w-full mt-4" disabled>
-          Check out
-        </button>
-        <button variant="outline" className="w-full mt-2">
-          Continue shopping
-        </button>
-      </div> */}
+      </div>
+    </div>
+  );
+}
+
+function SelectBox({ value }) {
+  return (
+    <div className="relative">
+      <select className="appearance-none border w-[102px] h-[54px] py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline pr-8">
+        <option>{value}</option>
+      </select>
+      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+        <img src={Arrow} className="h-4 w-4" />
+      </div>
     </div>
   );
 }
 
 export default function SummaryPage() {
+  const isEmpty = false;
   return (
     <>
       <div className="bg-black-50 pb-24">
-        {/* Add padding-bottom here */}
-        {/* containerNoPadding 4xl:mx-[472px] 3xl:mx-[160px] xxl:mx-[124px] mx-[16px]   */}
         <div className="container mx-auto  min-h-screen">
-          {/* Ensure the content takes at least full height */}
           <h1 className="text-h5Bold py-[41px] px-6 text-left">My cart</h1>
           <div className="flex flex-col md:flex-row  gap-8 ">
-            <ItemContainer />
+            <VariantSection>
+              {isEmpty ? (
+                <CartEmpty />
+              ) : (
+                <div
+                  className="grid grid-cols-1 divide-y px-6"
+                  style={{ marginTop: 0 }}
+                >
+                  <CartItem
+                    name="Reyon Long Sleeve Shirt"
+                    image="https://firebasestorage.googleapis.com/v0/b/wdb-storefront-project-api.appspot.com/o/products%2FdBt7jOQ9qnKvs8aWrxb5%2F_images%2FtrWAP3Q0eBJTUjhmP683-Gemini%20Generated%20(8).jpeg?alt=media&token=cf7b47de-a656-4608-98a7-96a6b0cc7a2c"
+                    color="Blue"
+                    size="M"
+                    quantity={2}
+                    price={2000.0}
+                  />
+                  <CartItem
+                    name="Reyon Long Sleeve Shirt"
+                    image="https://firebasestorage.googleapis.com/v0/b/wdb-storefront-project-api.appspot.com/o/products%2FdBt7jOQ9qnKvs8aWrxb5%2F_images%2FtrWAP3Q0eBJTUjhmP683-Gemini%20Generated%20(8).jpeg?alt=media&token=cf7b47de-a656-4608-98a7-96a6b0cc7a2c"
+                    color="Blue"
+                    size="M"
+                    quantity={2}
+                    price={2000.0}
+                  />
+                  {/* <div>02</div>
+                  <div>03</div> */}
+                </div>
+              )}
+            </VariantSection>
+
             <CartSummary />
           </div>
 
           {/* Featured Products */}
           <div className="my-24">
-            <p className="font-bold text-[32px] text-center">
-              Featured Products
-            </p>
+            <p className="text-h5Bold">People also like these</p>
 
             <div className="mt-16 grid grid-cols-1 md:grid-cols-4 gap-10">
               {mockupProduct.map((product) => (
@@ -230,6 +281,10 @@ export default function SummaryPage() {
                 />
               ))}
             </div>
+          </div>
+
+          <div class="grid grid-cols-1 divide-y">
+            <div>01</div>
           </div>
         </div>
       </div>
