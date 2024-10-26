@@ -13,6 +13,7 @@ import Modal from "../Components/UI/Modal";
 import Heart from "../assets/heart.svg";
 import Arrow from "../assets/arrow_down.svg";
 import Loading from "../Components/UI/Loading";
+import ProductGallery from "../Components/UI/ProductGallery";
 
 // Define the custom size order
 const sizeOrder = ["S", "M", "L", "XL"];
@@ -182,8 +183,10 @@ function ProductDetail() {
     <>
       {product ? (
         <>
-          <div className="container mx-auto mt-20 flex flex-col md:flex-row gap-10">
-            <div className="flex-1">Carousel</div>
+          <div className="container mx-auto mt-20 flex flex-col xxl:flex-row gap-10">
+            <div className="flex-1">
+              <ProductGallery imageUrls={product.imageUrls} />
+            </div>
 
             {/* Product Detail */}
             <div className="flex-1 mb-4">

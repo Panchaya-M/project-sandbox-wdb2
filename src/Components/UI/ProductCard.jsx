@@ -20,7 +20,7 @@ function ProductCard({
         <img
           src={image}
           alt={name}
-          style={{ width: "260px", height: "260px", objectFit: "cover" }}
+          className="aspect-[1/1] w-full object-cover"
         />
       </Link>
       <Link to={`/product/${permalink}`}>
