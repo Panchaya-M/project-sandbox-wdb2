@@ -30,6 +30,14 @@ body {
   @apply border-limeGreen-900;
 }
 
+.btn-third {
+  @apply text-black-900 bg-white border border-black-300 hover:bg-black-300 hover:text-white disabled:text-black-500 disabled:bg-black-100 disabled:border-black-300;
+}
+
+.btn-third-active {
+  @apply border-black-900;
+}
+
 .percent-discount {
   @apply px-2.5 py-2 bg-danger text-bodyText text-white;
 }
