@@ -45,3 +45,29 @@ body {
 .dot-loading {
   @apply w-4 h-4 bg-limeGreen-900 rounded-full animate-bounce;
 }
+
+.swiper-slide {
+  height: auto;
+}
+
+.thumbs-swiper .swiper-slide {
+  opacity: 0.4;
+  transition: opacity 0.3s;
+}
+
+.thumbs-swiper .swiper-slide-thumb-active {
+  opacity: 1;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  color: #000 !important;
+  background-color: #ffffff;
+  padding: 24px;
+  border-radius: 50%;
+}
+
+.swiper-button-prev:after,
+.swiper-button-next:after {
+  font-size: 16px !important;
+}
