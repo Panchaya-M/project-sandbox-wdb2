@@ -1,8 +1,6 @@
 /* eslint-disable react/prop-types */
 import Ratings from "./Ratings";
-import { Link, useLocation } from "react-router-dom";
-
-const location = useLocation;
+import { Link } from "react-router-dom";
 
 function ProductCard({
   name,
@@ -19,7 +17,11 @@ function ProductCard({
   return (
     <div className="flex flex-col relative">
       <Link to={`/product/${permalink}`} className="mb-4">
-        <img src={image} alt={name} />
+        <img
+          src={image}
+          alt={name}
+          style={{ width: "260px", height: "260px", objectFit: "cover" }}
+        />
       </Link>
       <Link to={`/product/${permalink}`}>
         <h6 className="text-h6Bold truncate mb-2">{name}</h6>

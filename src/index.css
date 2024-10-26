@@ -41,3 +41,7 @@ body {
 .percent-discount {
   @apply px-2.5 py-2 bg-danger text-bodyText text-white;
 }
+
+.dot-loading {
+  @apply w-4 h-4 bg-limeGreen-900 rounded-full animate-bounce;
+}
