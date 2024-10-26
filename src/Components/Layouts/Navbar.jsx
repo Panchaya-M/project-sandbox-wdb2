@@ -29,7 +29,7 @@ function Navbar() {
             {/* Hamburger Icon */}
             <img className="flex sx:hidden" src={Hamburger} alt="Hamburger" />
             {/* Logo Image */}
-            <img src="/images/nav-logo-white.png" alt="Logo" />
+            <Link to="/"><img src="/images/nav-logo-white.png" alt="Logo" /></Link>
           </div>
 
           {/* Menu Container */}
@@ -58,7 +58,9 @@ function Navbar() {
               <img src={Person} alt="Person" className="h-5" />
             </li>
             <li>
-              <img src={Cart} alt="Cart" className="h-5" />
+              <Link to="/cart">
+                <img src={Cart} alt="Cart" className="h-5" />
+              </Link>
             </li>
           </ul>
         </div>
