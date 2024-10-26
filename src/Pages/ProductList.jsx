@@ -112,6 +112,19 @@ const Sort = (props) => {
     }
   }
 
+  function onReset() {
+    setSelected("price-asc");
+    // Need to close(?)
+    // setIsOpen(false);
+
+    if (
+      props.onChangeSort !== undefined &&
+      typeof props.onChangeSort === "function"
+    ) {
+      props.onChangeSort("price-asc");
+    }
+  }
+
   return (
     <div className="flex flex-row justify-end relative">
       <button
@@ -126,28 +139,65 @@ const Sort = (props) => {
 
       {/* Sort options */}
       <div
-        className={`absolute top-[100%] right-0 grid whitespace-nowrap mt-1 p-6 gap-y-6 border border-grey-300 bg-white z-50 ${
-          isOpen ? "" : "hidden"
-        }`}
+        className={`
+          max-md:fixed max-md:bottom-0 max-md:left-0 max-md:w-full
+          absolute md:top-[100%] md:right-0 z-[100]
+          max-md:bg-black/50 max-md:h-full
+          max-md:flex flex-col justify-end items-center
+          ${isOpen ? "" : "max-md:hidden"}
+        `}
       >
-        {sortOptions.map((option) => {
-          return (
-            <button
-              key={`sort-option-${option.value}`}
-              className="block w-full text-left flex justify-start items-center gap-x-4"
-              onClick={() => onChangeSort(option.value)}
-            >
-              {/* radio button */}
-              <div className="w-6 h-6 block bg-white border-2 border-limeGreen rounded-full overflow-hidden p-1 inline-block">
-                {selected === option.value && (
-                  <div className="w-full h-full bg-limeGreen rounded-full" />
-                )}
+        <div
+          className={`
+            w-full grid whitespace-nowrap mt-1 p-6 gap-y-6 border border-grey-300 bg-white z-[100]
+            max-md:rounded-t-2xl
+            ${isOpen ? "" : "hidden"}
+          `}
+        >
+          {/* Mobile: Sort by title, control bar */}
+          <div className="md:hidden">
+            <div className="grid grid-cols-3 text-md">
+              <div className="col text-left">
+                <button className="text-info" onClick={() => setIsOpen(false)}>Cancel</button>
               </div>
+              <div className="col text-center font-semibold">
+                <p className="font-">
+                  Sort by
+                </p>
+              </div>
+              <div className="col text-right">
+                <button className="text-info" onClick={onReset}>Reset</button>
+              </div>
+            </div>
+          </div>
 
-              <span className="text-sm">{option.name}</span>
-            </button>
-          );
-        })}
+          {/* Sort options */}
+          <div className="grid gap-y-4">
+            {sortOptions.map((option) => {
+              return (
+                <button
+                  key={`sort-option-${option.value}`}
+                  className="block w-full text-left flex justify-start items-center gap-x-4"
+                  onClick={() => onChangeSort(option.value)}
+                >
+                  {/* radio button */}
+                  <div className="w-6 h-6 block bg-white border-2 border-limeGreen rounded-full overflow-hidden p-1 inline-block">
+                    {selected === option.value && (
+                      <div className="w-full h-full bg-limeGreen rounded-full" />
+                    )}
+                  </div>
+
+                  <span className="text-sm">{option.name}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Mobile: Apply sort buttons */}
+          <div className="md:hidden mt-0">
+            <button className="block w-full p-4 text-center bg-black text-white">Apply</button>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -307,7 +357,7 @@ const ProductListPage = () => {
     <>
       <div className="container mx-auto my-24">
         <div className="grid grid-cols-4 gap-x-10">
-          <div className="col-span-1">
+          <div className="col-span-1 max-md:hidden">
             {/* Filter */}
             <Filter
               categories={Object.values(categories)}
@@ -316,42 +366,44 @@ const ProductListPage = () => {
           </div>
 
           <div className="md:col-span-3 col-span-full">
-            <div className="grid grid-cols-5">
-              <div className="md:col-span-4">
+            <div className="grid md:grid-cols-5">
+              <div className="md:col-span-4 flex justify-start items-center">
                 <h1 className="text-3xl font-bold">{renderHeadingTitle()}</h1>
               </div>
-              <div className="md:col-span-1">
+              <div className="md:col-span-1 text-right flex justify-end items-center">
                 <Sort onChangeSort={onSort} />
               </div>
             </div>
 
             {/* Products */}
-            <div className="grid md:grid-cols-3 gap-x-10 gap-y-10 mt-10 relative">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-10 gap-y-10 mt-10 relative">
               
               {
                 isLoading && (
-                  <div className="bg-black/50 w-full h-full absolute z-10 backdrop-blur-md p-4">
-                      <p className="text-center text-white font-bold">Loading products...</p>
+                  <div className="bg-black/50 w-full h-full absolute z-10 backdrop-blur-md p-4 min-h-16 col-span-full">
+                      <p className="text-center text-white font-bold animate-pulse">Loading products...</p>
                   </div>
                 )
               }
 
               {
                 products.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    name={product.name}
-                    description={product.description}
-                    image={product.imageUrls.length > 0 ? product.imageUrls[0] : ''}
-                    rating={product.ratings}
-                    price={product.price}
-                    promotionPrice={product.promotionalPrice !== undefined ? product.promotionalPrice : 0}
-                    isPromotion={product.promotionalPrice !== product.price}
-                    permalink={product.permalink}
-                    // price={390}
-                    // promotionPrice={290}
-                    // isPromotion={true}
-                  />
+                  <div className="col-span-1">
+                    <ProductCard
+                      key={product.id}
+                      name={product.name}
+                      description={product.description}
+                      image={product.imageUrls.length > 0 ? product.imageUrls[0] : ''}
+                      rating={product.ratings}
+                      price={product.price}
+                      promotionPrice={product.promotionalPrice !== undefined ? product.promotionalPrice : 0}
+                      isPromotion={product.promotionalPrice !== product.price}
+                      permalink={product.permalink}
+                      // price={390}
+                      // promotionPrice={290}
+                      // isPromotion={true}
+                    />
+                  </div>
                 ))
               }
             </div>
