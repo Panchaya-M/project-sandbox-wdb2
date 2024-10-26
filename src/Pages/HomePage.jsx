@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import { getCollection } from "../api";
+import { getAllProducts, getCollection } from "../api";
 import ProductCard from "../Components/UI/ProductCard";
 
 function HomePage() {
   // React Hook
   const isLoaded = useRef(false);
   const [collectionItems, setCollectionItems] = useState([]);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
 
   // Use Effect
   useEffect(() => {
     if (!isLoaded.current) {
       _getCollection();
+      _getFeaturedProducts();
       isLoaded.current = true;
     }
 
@@ -19,6 +21,13 @@ function HomePage() {
 
   async function _getCollection() {
     setCollectionItems(await getCollection());
+  }
+
+  async function _getFeaturedProducts() {
+    const result = await getAllProducts({ limit: 4 })
+    const products = result.data.data;
+
+    setFeaturedProducts(products);
   }
 
   const mockupProduct = [
@@ -161,7 +170,7 @@ function HomePage() {
           <p className="font-bold text-[32px] text-center">Featured Products</p>
 
           <div className="mt-16 grid grid-cols-1 md:grid-cols-4 gap-10">
-            {mockupProduct.map(product => (
+            {featuredProducts.map(product => (
               <ProductCard
                 key={product.id}
                 name={product.name}
