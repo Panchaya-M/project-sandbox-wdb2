@@ -43,5 +43,5 @@ body {
 }
 
 .dot-loading {
-  @apply w-5 h-5 bg-limeGreen rounded-full animate-bounce
+  @apply w-4 h-4 bg-limeGreen-900 rounded-full animate-bounce;
 }

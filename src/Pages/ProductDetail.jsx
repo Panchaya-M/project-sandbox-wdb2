@@ -1,14 +1,15 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { getProductDetail } from "../api";
+import useAlert from "../hooks/useAlert";
+import { Link, useParams } from "react-router-dom";
+import { createNewCart, getProductDetail } from "../api";
 import {
   Button,
   Ratings,
   SecondaryButton,
   SimilarProducts,
 } from "../Components";
-
+import Modal from "../Components/UI/Modal";
 import Heart from "../assets/heart.svg";
 import Arrow from "../assets/arrow_down.svg";
 import Loading from "../Components/UI/Loading";
@@ -17,10 +18,16 @@ import Loading from "../Components/UI/Loading";
 const sizeOrder = ["S", "M", "L", "XL"];
 
 // Sort the variants by size using the custom order
-const sortedVariantBySize = variants => {
+const sortedVariantBySize = (variants) => {
   return variants?.sort(
     (a, b) => sizeOrder.indexOf(a.size) - sizeOrder.indexOf(b.size)
   );
+};
+
+const formatPrice = (value) => {
+  return Number(value)
+    .toFixed(2)
+    .replace(/\d(?=(\d{3})+\.)/g, "$&,");
 };
 
 const quantityOptions = [
@@ -37,11 +44,6 @@ const PriceDisplay = ({
   isPromotion = false,
   isOutOfStock = false,
 }) => {
-  const formatPrice = value => {
-    return Number(value)
-      .toFixed(2)
-      .replace(/\d(?=(\d{3})+\.)/g, "$&,");
-  };
   return (
     <div className="mb-6">
       <div>
@@ -65,7 +67,7 @@ const PriceDisplay = ({
   );
 };
 
-const VariantSection = ({ sectionName, customGap, children }) => {
+const Options = ({ sectionName, customGap, children }) => {
   return (
     <div className="mb-6">
       <p className="text-bodyText text-black-700 mb-2">{sectionName}</p>
@@ -77,18 +79,18 @@ const VariantSection = ({ sectionName, customGap, children }) => {
 };
 
 function ProductDetail() {
+  const alert = useAlert();
   const { permalink } = useParams();
-  const [product, setProduct] = useState(null);
-  const [isOutOfStock, setIsOutOfStock] = useState(false);
 
+  const [product, setProduct] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [groupedValiantByColor, setGroupedValiantByColor] = useState(null);
   const [productColors, setProductColors] = useState([]);
   const [selectedColor, setSelectedColor] = useState(null);
-
-  const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(0);
   const [isOpenQtyOptions, setIsOpenQtyOptions] = useState(false);
-
-  const [groupedValiantByColor, setGroupedValiantByColor] = useState(null);
+  const [isOutOfStock, setIsOutOfStock] = useState(false);
+  const [isOpenAddedToCartModal, setIsOpenAddedToCartModal] = useState(false);
 
   useEffect(() => {
     setProduct(null);
@@ -96,9 +98,8 @@ function ProductDetail() {
   }, [permalink]);
 
   useEffect(() => {
-    // Use an object to track unique colors with their color codes
     const uniqueColors = {};
-    product?.variants?.forEach(item => {
+    product?.variants?.forEach((item) => {
       if (!uniqueColors[item.color]) {
         uniqueColors[item.color] = item.colorCode;
       }
@@ -108,14 +109,15 @@ function ProductDetail() {
       color,
       colorCode,
     }));
+
     if (colors.length === 0) {
       return;
     }
 
-    setProductColors(colors ?? []);
+    setProductColors(colors);
     setSelectedColor(colors[0].color);
 
-    const checkRemains = product?.variants.every(item => item.remains === 0);
+    const checkRemains = product?.variants.every((item) => item.remains === 0);
     setIsOutOfStock(checkRemains);
   }, [product]);
 
@@ -134,10 +136,46 @@ function ProductDetail() {
     setGroupedValiantByColor(groupedValiant);
   }, [selectedColor]);
 
-  async function _getProductDetail() {
-    const result = await getProductDetail(permalink);
+  const openAddedToCartModal = () => {
+    setIsOpenAddedToCartModal(true);
+  };
 
-    setProduct(result);
+  const closeAddedToCartModal = () => {
+    setIsOpenAddedToCartModal(false);
+  };
+
+  const handleAddToCartButton = () => {
+    if (!selectedProduct) {
+      alert.warning("Please select size.");
+      return;
+    }
+    _addProductToCart();
+  };
+
+  async function _getProductDetail() {
+    try {
+      const result = await getProductDetail(permalink);
+      setProduct(result.data);
+    } catch (error) {
+      alert.error(error.response.data.message);
+    }
+  }
+
+  async function _addProductToCart() {
+    try {
+      const params = {
+        items: [
+          {
+            skuCode: selectedProduct.skuCode,
+            quantity: quantity,
+          },
+        ],
+      };
+      await createNewCart(params);
+      openAddedToCartModal();
+    } catch (error) {
+      alert.error(error.response.data.message);
+    }
   }
 
   return (
@@ -176,9 +214,9 @@ function ProductDetail() {
               </div>
 
               {/* colors */}
-              <VariantSection sectionName="Color" customGap="gap-12">
+              <Options sectionName="Color" customGap="gap-12">
                 {productColors.length > 0 &&
-                  productColors.map(color => (
+                  productColors.map((color) => (
                     <div
                       key={color.color}
                       className="flex flex-col items-center gap-1.5"
@@ -199,10 +237,10 @@ function ProductDetail() {
                       </p>
                     </div>
                   ))}
-              </VariantSection>
+              </Options>
 
               {/* sizes */}
-              <VariantSection sectionName="Size">
+              <Options sectionName="Size">
                 {groupedValiantByColor &&
                   sortedVariantBySize(
                     groupedValiantByColor[selectedColor]?.items
@@ -221,10 +259,10 @@ function ProductDetail() {
                       active={selectedProduct?.size === variant?.size}
                     />
                   ))}
-              </VariantSection>
+              </Options>
 
               {/* Quantity */}
-              <VariantSection sectionName="Qty.">
+              <Options sectionName="Qty.">
                 <div className="w-1/4 pr-2 relative">
                   <SecondaryButton
                     text={isOutOfStock ? "Out of Stock" : quantity}
@@ -249,7 +287,7 @@ function ProductDetail() {
                       isOpenQtyOptions ? "" : "hidden"
                     }`}
                   >
-                    {quantityOptions.map(option => {
+                    {quantityOptions.map((option) => {
                       return (
                         selectedProduct?.remains >= option.value && (
                           <button
@@ -274,7 +312,7 @@ function ProductDetail() {
                     Only {selectedProduct?.remains} left!
                   </span>
                 )}
-              </VariantSection>
+              </Options>
 
               {/* Add to cart button */}
               <div className="mb-12">
@@ -282,15 +320,60 @@ function ProductDetail() {
                   <Button
                     text="Add to cart"
                     customClassName="flex-1"
-                    onClick={() => console.log(selectedProduct)}
+                    onClick={handleAddToCartButton}
                     disabled={isOutOfStock}
                   />
                 </div>
               </div>
+
+              {isOpenAddedToCartModal && (
+                <Modal
+                  header="Items added to your cart"
+                  footer={
+                    <div className="flex gap-4">
+                      <Link to="/cart" className="flex-1">
+                        <Button
+                          text="View cart"
+                          customClassName="w-full h-full"
+                        />
+                      </Link>
+                      <SecondaryButton
+                        text="Continue shopping"
+                        customClassName="flex-1"
+                        onClick={closeAddedToCartModal}
+                      />
+                    </div>
+                  }
+                  closeModal={closeAddedToCartModal}
+                >
+                  <div className="flex items-center gap-10">
+                    <img
+                      src={product.imageUrls[0]}
+                      alt={product.name}
+                      style={{
+                        width: "160px",
+                        height: "160px",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <div className="w-full">
+                      <div className="flex justify-between items-center">
+                        <h6 className="text-h6Bold">{product.name}</h6>
+                        <p className="text-h6Bold">
+                          THB {formatPrice(product.promotionalPrice * quantity)}
+                        </p>
+                      </div>
+                      <p className="text-subHeading text-black-700">
+                        QTY : {quantity}
+                      </p>
+                    </div>
+                  </div>
+                </Modal>
+              )}
             </div>
           </div>
 
-          <SimilarProducts category={product?.categories[0]} />
+          <SimilarProducts category={product?.categories?.[0]} />
         </>
       ) : (
         <Loading />
