@@ -331,7 +331,7 @@ function ProductDetail() {
                   header="Items added to your cart"
                   footer={
                     <div className="flex gap-4">
-                      <Link to="/cart" className="flex-1">
+                      <Link to="/summary" className="flex-1">
                         <Button
                           text="View cart"
                           customClassName="w-full h-full"
