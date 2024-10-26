@@ -55,27 +55,20 @@ export async function getAllCategory() {
 }
 
 /*
-get product detail
+product detail
 */
-export async function getProductDetail(permalink) {
-  const result = await axios.get("https://api.storefront.wdb.skooldio.dev/products/" + permalink) 
-
-  return result.data;
+export function getProductDetail(permalink) {
+  return axios.get(
+    "https://api.storefront.wdb.skooldio.dev/products/" + permalink
+  );
 }
 
-export async function getAllProducts(
-  params
-) {
+export function getAllProducts(params) {
+  return axios.get("https://api.storefront.wdb.skooldio.dev/products", {
+    params: params,
+  });
+}
 
-  const result = await axios.get(
-    "https://api.storefront.wdb.skooldio.dev/products", {
-      params: params
-    }
-  );
-
-  if (result.data && Array.isArray(result.data.data) && result.data.data.length > 0) {
-    return result.data.data;
-  }
-
-  return [];
+export function createNewCart(body) {
+  return axios.post("https://api.storefront.wdb.skooldio.dev/carts", body);
 }
