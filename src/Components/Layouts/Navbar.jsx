@@ -1,3 +1,4 @@
+import {useEffect, useState} from 'react';
 import { Link } from "react-router-dom";
 
 // import BasketEmpty from "../../assets/basket-empty.svg";
@@ -6,6 +7,7 @@ import Heart from "../../assets/heart_w.svg";
 import Person from "../../assets/person_w.svg";
 import Cart from "../../assets/cart_w.svg";
 import Hamburger from "../../assets/hamburger.svg";
+import {getParentCategory} from '../../api';
 
 function getLink(category) {
   return `/products/${category}`;
@@ -18,6 +20,18 @@ const FixedMenuItems = [
 ];
 
 function Navbar() {
+  const [menuItems, setMenuItems] = useState([]);
+
+  useEffect(() => {
+    getMenuItems()
+  }, [])
+
+  async function getMenuItems() {
+    const menuItems = await getParentCategory();
+
+    setMenuItems(menuItems);
+  }
+
   return (
     <nav className="bg-black text-white">
       {/* Container */}
@@ -35,11 +49,16 @@ function Navbar() {
           {/* Menu Container */}
           <div className="">
             <ul className="hidden sx:flex gap-x-6">
-              {FixedMenuItems.map((item, index) => (
-                <li key={`nav-item-${index}`}>
-                  <Link to={getLink(item.link)}>{item.name}</Link>
-                </li>
-              ))}
+              {
+                menuItems.length > 0 ? 
+                menuItems.map((item, index) => (
+                  <li key={`nav-item-${index}`}>
+                    <Link to={getLink(item.permalink)}>{item.name}</Link>
+                  </li>
+                )) : (
+                  <p>Loading items...</p>
+                ) 
+              }
             </ul>
           </div>
         </div>

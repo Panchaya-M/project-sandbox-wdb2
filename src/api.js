@@ -72,3 +72,9 @@ export function getAllProducts(params) {
 export function createNewCart(body) {
   return axios.post("https://api.storefront.wdb.skooldio.dev/carts", body);
 }
+
+export async function getParentCategory() {
+  const categories = await getAllCategory();
+
+  return categories.filter((category) => category.parentId === null);
+}
