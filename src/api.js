@@ -78,3 +78,13 @@ export async function getParentCategory() {
 
   return categories.filter((category) => category.parentId === null);
 }
+
+export async function getChildrenCategories(parentId) {
+  const categories = await getAllCategory();
+
+  if (!parentId) {
+    return [];
+  }
+
+  return categories.filter((category) => category.parentId === parentId);
+}

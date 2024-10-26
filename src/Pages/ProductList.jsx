@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 
 import DefaultLayout from "../Components/Layouts/DefaultLayout";
 import Arrow from "../assets/arrow_down.svg";
-import { getAllCategory, getProductByCategory } from "../api";
+import { getAllCategory, getChildrenCategories, getParentCategory, getProductByCategory } from "../api";
 import { ProductCard } from "../Components";
 
 /**
@@ -26,12 +26,12 @@ const Filter = ({ categories, onSelectFilter }) => {
   const [selected, setSelected] = useState("");
 
   // On select filter
-  function onSelect(id, permalink) {
+  function onSelect(id, permalink, name) {
     setSelected(id);
 
     // Redirect to category page
     if (typeof onSelectFilter === "function") {
-      onSelectFilter(permalink);
+      onSelectFilter(permalink, name);
     }
   }
 
@@ -44,7 +44,7 @@ const Filter = ({ categories, onSelectFilter }) => {
           className={`${
             selected === item.id ? "bg-limeGreen" : ""
           } p-2.5 text-sm block w-full text-left`}
-          onClick={() => onSelect(item.id, item.permalink)}
+          onClick={() => onSelect(item.id, item.permalink, item.name)}
         >
           {item.name}
         </button>
@@ -58,7 +58,16 @@ const Filter = ({ categories, onSelectFilter }) => {
       return (
         <div key={`group-${category.name}`}>
           <div className="">
-            <p className="text-lg font-semibold py-3">{category.name}</p>
+            <button
+              className={`
+                  block w-full text-left text-lg font-semibold py-3
+                  ${selected === category.id ? "bg-limeGreen" : ""}
+                `}
+
+              onClick={() => category.permalink && category.id && onSelect(category.id, category.permalink, category.name)}
+            >
+              {category.name}
+            </button>
           </div>
           <div className="">{listFilterItem(category.children)}</div>
         </div>
@@ -148,19 +157,28 @@ const Sort = (props) => {
 // Main component
 const ProductListPage = () => {
   const params = useParams();
+  const [pageDetail, setPageDetail] = useState({ name: null, id: null });
   const [sortBy, setSortBy] = useState(["price", "asc"]);
   const [categories, setCategories] = useState({});
   const [products, setProducts] = useState([]);
 
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedPermalink, setSelectedPermalink] = useState(null);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    _getAllCategories();
+    _getCategoryPageDetail();
     _getProductByCategory();
-  }, [sortBy, selectedPermalink]);
+  }, [sortBy, selectedPermalink, params]);
+
+  useEffect(() => {
+    _getChildrenCategories();
+  }, [pageDetail]);
 
   // Create category list
   function createCategoryList(fetchedCategories) {
+    console.log('fetchedCategories', fetchedCategories);
     let _categories = {};
 
     // Add to parent category
@@ -205,24 +223,53 @@ const ProductListPage = () => {
     return _categories;
   }
 
-  async function _getAllCategories() {
-    const result = await getAllCategory();
+  async function _getCategoryPageDetail() {
+    const categories = await getParentCategory();
+    const currentCategory = categories.find(category => category.permalink === params.category);
 
-    setCategories(createCategoryList(result));
+    if (currentCategory) {
+      setPageDetail(currentCategory);
+    }
   }
 
+  // async function _getAllCategories() {
+  //   const result = await getAllCategory();
+
+  //   setCategories(createCategoryList(result));
+  // }
+
   async function _getProductByCategory() {
+    setIsLoading(true);
     const result = await getProductByCategory(
-      selectedPermalink === null ? [] : [selectedPermalink],
+      selectedPermalink === null ? [params.category] : [selectedPermalink],
       sortBy[0],
       sortBy[1]
     );
 
     setProducts(result);
+    setIsLoading(false);
   }
 
-  function onSelectFilter(permalink) {
-    setSelectedPermalink(permalink);
+  async function _getChildrenCategories() {
+    if (pageDetail.id !== null) {
+      const categories = await getChildrenCategories(pageDetail.id);
+
+      const categoriesList = createCategoryList(
+        [{ ...pageDetail, name: 'All products' }, ...categories]
+          .map((category) => ({ ...category, parentId: null }))
+      );
+      setCategories(categoriesList);
+    }
+  }
+
+  function onSelectFilter(permalink, categoryName) {
+    setSelectedPermalink(permalink, categoryName);
+    
+    if (permalink === pageDetail.permalink) {
+      setSelectedCategory(null);
+    } else {
+      setSelectedCategory(categoryName);
+    }
   }
 
   function onSort(sortBy) {
@@ -237,6 +284,18 @@ const ProductListPage = () => {
         setSortBy(["ratings", "desc"]);
         break;
     }
+  }
+
+  function renderHeadingTitle() {
+    if (pageDetail.name === null) {
+      return "Loading...";
+    }
+
+    if (selectedCategory === null) {
+      return `${pageDetail.name}`;
+    }
+
+    return `${pageDetail.name}'s ${selectedCategory}`;
   }
 
   return (
@@ -254,7 +313,7 @@ const ProductListPage = () => {
           <div className="md:col-span-3">
             <div className="grid grid-cols-5">
               <div className="md:col-span-4">
-                <h1 className="text-3xl font-bold">{`{{collection.name}}`} Clothing</h1>
+                <h1 className="text-3xl font-bold">{renderHeadingTitle()}</h1>
                 {/* <p>Sort by: {sortBy}</p> */}
               </div>
               <div className="md:col-span-1">
@@ -267,7 +326,16 @@ const ProductListPage = () => {
             </div>
 
             {/* Products */}
-            <div className="grid md:grid-cols-3 gap-x-10 gap-y-10 mt-10">
+            <div className="grid md:grid-cols-3 gap-x-10 gap-y-10 mt-10 relative">
+              
+              {
+                isLoading && (
+                  <div className="bg-black/50 w-full h-full absolute z-10 backdrop-blur-md p-4">
+                      <p className="text-center text-white font-bold">Loading products...</p>
+                  </div>
+                )
+              }
+
               {
                 products.map((product) => (
                   <ProductCard
@@ -278,7 +346,7 @@ const ProductListPage = () => {
                     rating={product.ratings}
                     price={product.price}
                     promotionPrice={product.promotionalPrice !== undefined ? product.promotionalPrice : 0}
-                    isPromotion={product.promotionalPrice !== undefined}
+                    isPromotion={product.promotionalPrice !== product.price}
                     permalink={product.permalink}
                     // price={390}
                     // promotionPrice={290}
