@@ -25,15 +25,11 @@ const router = createBrowserRouter([
             path: "/products/:category",
             element: <ProductListPage />,
           },
-        ]
+        ],
       },
       {
         path: "/product/:permalink",
         element: <ProductDetailPage />,
-      },
-      {
-        path: "/cart",
-        element: <h1>My Cart</h1>,
       },
       {
         path: "/summary",
