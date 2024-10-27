@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import Arrow from "../assets/arrow_down.svg";
+import SortByIcon from "../assets/sortby.svg";
 import { getAllCategory, getChildrenCategories, getCollections, getParentCategory, getProductByCategory } from "../api";
 import { ProductCard } from "../Components";
 
@@ -171,8 +172,9 @@ const Sort = (props) => {
           isOpen ? "border-limeGreen" : "border-transparent"
         }`}
       >
-        <p className="text-sm">Sort by</p>
-        <img src={Arrow} alt="Arrow Down" className="pl-5" />
+        <p className="text-sm max-md:text-[18px]">Sort by</p>
+        <img src={Arrow} alt="Arrow Down" className="pl-5 hidden md:block" />
+        <img src={SortByIcon} alt="Arrow Down" className="pl-2 w-10 h-10 md:hidden" />
       </button>
 
       {/* Sort options */}
