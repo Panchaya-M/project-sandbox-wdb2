@@ -393,15 +393,33 @@ const ProductListPage = () => {
   }
 
   function renderHeadingTitle() {
-    if (pageDetail.name === null) {
+    const mainPageName = checkYourGrammarChangeFromPruralToSingular(pageDetail.name);
+    if (mainPageName === null) {
       return "Loading...";
     }
 
     if (selectedCategory === null) {
-      return `${pageDetail.name}`;
+      return `${mainPageName}`;
     }
 
-    return `${pageDetail.name}'s ${selectedCategory}`;
+    return `${mainPageName}'s ${selectedCategory}`;
+  }
+
+  function checkYourGrammarChangeFromPruralToSingular(text) {
+    switch (text) {
+      case 'Ladies':
+        return 'Lady';
+      case 'Men':
+        return 'Man';
+      case 'Kids':
+        return 'Kid';
+      case 'Accessories':
+        return 'Accessory';
+      case 'Women':
+        return 'Woman';
+      default:
+        return text;
+    }
   }
 
   return (
