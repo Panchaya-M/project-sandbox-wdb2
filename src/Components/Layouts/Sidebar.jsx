@@ -1,210 +1,179 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ArrowRight from "../../assets/arrow_right.svg";
 import ArrowLeft from "../../assets/arrow_left.svg";
+import {getAllCategory} from '../../api';
+import {Link} from 'react-router-dom';
 
-function Sidebar() {
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [selectedSubItem, setSelectedSubItem] = useState(null);
 
-  // const items = [
-  //   { id: 1, name: "Men", subItems: ["Shirts", "Pants"] },
-  //   { id: 2, name: "Women", subItems: ["Dresses", "Tops"] },
-  //   { id: 3, name: "Kids", subItems: ["Toys", "Clothes"] },
-  //   { id: 4, name: "Shoes", subItems: ["Sneakers", "Boots"] },
-  //   { id: 5, name: "Accessories", subItems: ["Bags", "Belts"] },
-  // ];
-  const items = [
-    {
-      id: 1,
-      name: "Men",
-      subItems: [
-        {
-          name: "Shirts",
-          subSubItems: ["Mock 1-1-1", "Mock 1-1-2"],
-        },
-        {
-          name: "Pants",
-          subSubItems: ["Mock1-2-1", "Mock 1-2-2"],
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: "Women",
-      subItems: [
-        {
-          name: "Dresses",
-          subSubItems: ["Mock 2-1-1", "Mock 2-1-2"],
-        },
-        {
-          name: "Tops",
-          subSubItems: ["Mock2-2-1", "Mock 2-2-2"],
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Kids",
-      subItems: [
-        {
-          name: "Toys",
-          subSubItems: ["Mock 1-1-1", "Mock 1-1-2"],
-        },
-        {
-          name: "Clothes",
-          subSubItems: ["Mock1-2-1", "Mock 1-2-2"],
-        },
-      ],
-    },
-    {
-      id: 4,
-      name: "Shoes",
-      subItems: [
-        {
-          name: "Sneakers",
-          subSubItems: ["Mock 2-1-1", "Mock 2-1-2"],
-        },
-        {
-          name: "Boots",
-          subSubItems: ["Mock 2-2-1", "Mock 2-2-2"],
-        },
-      ],
-    },
-    {
-      id: 5,
-      name: "Accessories",
-      subItems: [
-        {
-          name: "Bags",
-          subSubItems: ["Mock 2-1-1", "Mock 2-1-2"],
-        },
-        {
-          name: "Belts",
-          subSubItems: ["Mock 2-2-1", "Mock 2-2-2"],
-        },
-      ],
-    },
-  ];
+const fixedMenu = [
+  { name: 'Home', permalink: '/', isFixed: true }
+]
 
-  const handleItemClick = (item) => {
-    setSelectedItem(item); // Select the item and show sub-sidebar
-    setSelectedSubItem(null); // Reset the sub-item selection
-  };
 
-  const handleSubItemClick = (subItem) => {
-    setSelectedSubItem(subItem); // Select the sub-item and show sub-sub-sidebar
-  };
+function Sidebar({ isOpen, setIsOpen }) {
 
-  const handleBackClick = () => {
-    setSelectedSubItem(null); // Go back to the sub-sidebar
-  };
+  const cachedItemsRef = useRef([]);
+  const [menuItems, setMenuItems] = useState([]);
+  const [selectedMenu, setSelectedMenu] = useState(null);
 
-  const handleMainBackClick = () => {
-    setSelectedItem(null); // Go back to the main sidebar
-    setSelectedSubItem(null); // Reset the sub-item selection
-  };
+  const [isCategoryFetched, setIsCategoryFetched] = useState(false)
+  const [fetchedCategories, setFetchedCategories] = useState([])
+  const [parentMenuItem, setParentMenuItem] = useState(null)
+  const [previousPage, setPreviousPage] = useState(null)
+
+  useEffect(() => {
+    _getAllCategory()
+  }, [])
+
+  useEffect(() => {
+    categorizeMenu()
+  }, [fetchedCategories])
+  
+  function categorizeMenu() {
+    setParentMenuItem(null)
+    setPreviousPage(null)
+    if (!isCategoryFetched)
+      return
+
+    let _menu = {}
+
+    fetchedCategories.forEach((item) => {
+      // If the item is a parent
+      if (item.parentId === null) {
+        // Add the item to the menu
+        _menu[item.id] = {
+          ...item,
+          ..._menu[item.id],
+          children: []
+        }
+        // If the item is a child
+      } else {
+        if (!_menu[item.parentId]) {
+          _menu[item.parentId] = {
+            children: [],
+          }
+        }
+        // Add the item to the parent's children
+        _menu[item.parentId].children.push({...item, permalink: `/products/${item.permalink}`,})
+      }
+    })
+
+    const _menuItems = [...fixedMenu, ...Object.values(_menu)]
+    setMenuItems(_menuItems)
+    cachedItemsRef.current = _menuItems
+  }
+
+  async function _getAllCategory() {
+    const categories = await getAllCategory()
+
+    setFetchedCategories(categories)
+    setIsCategoryFetched(true)
+  }
+
+  function listMenuItem() {
+    function renderContent(item) {
+      return (
+        <>
+          <span>{item.name}</span>
+          { item.children && item.children.length > 0 && <img src={ArrowRight} alt="arrow-right" className="w-10 h-10" /> }
+        </>
+      )
+    }
+
+
+    return menuItems.map((item) => {
+      return (
+        <li key={`sidebar-item-${item.id}`} className="min-h-10">
+
+          {/* If the item is not a fixed menu */}
+          
+          {
+            item.children && item.children.length > 0 ? (
+              <button className="block w-full flex items-center justify-between" onClick={() => onSelect(item)}>
+                {renderContent(item)}
+              </button>
+            ) : (
+              <Link to={item.permalink} className="flex items-center justify-between" onClick={() => setIsOpen(false)} >
+                {renderContent(item)}
+              </Link>
+            )
+          }
+
+
+        </li>
+      )
+    })
+  }
+
+  function getNextPage(item) {
+    // If the item is null, go back to the parent
+    if (item === null && previousPage !== null) {
+      setMenuItems(previousPage)
+
+      // It should not be null
+      // we need to store the history of the previous page
+      setParentMenuItem(null)
+      return
+    }
+
+    let _selectedMenu = item.children
+
+    setParentMenuItem(item)
+    setPreviousPage(menuItems)
+    setMenuItems(_selectedMenu)
+  }
+
+  function onSelect(item) {
+    if (item === null) {
+      getNextPage(null)
+    }else if ((item !== null && item.children && item.children.length > 0)) {
+      getNextPage(item)
+    }
+
+    // setIsOpen(false)
+  }
+
+  function renderTitleBar() {
+    return (
+      <div className="my-4">
+        {/* Title */}
+        <div className="px-4 py-2 flex justify-start items-center gap-x-6 border-b border-b-300">
+          {/* Arrow left */}
+          <div className="">
+            <button className="block" onClick={() => onSelect(null)}>
+              <img src={ArrowLeft} alt="arrow-left" className="w-10 h-10" />
+            </button>
+          </div>
+
+          <p className="text-xl font-bold">
+            {parentMenuItem.name}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isOpen) return
 
   return (
-    <aside
-      id="sidebar"
-      className="fixed top-0 left-0 z-40 w-[321px] h-screen rounded-r-[16px] text-black"
-      aria-label="Sidebar"
+    <div
+      className="bg-black/50 fixed top-0 left-0 right-0 bottom-0 z-30 flex md:hidden"
+      onClick={() => setIsOpen(false)}
     >
-      <div className="h-full  bg-gray-50 dark:bg-gray-800">
-        {/* Main Sidebar (hidden when an item is clicked) */}
-        {!selectedItem && (
-          <div className="pt-[20px]">
-            <div className="font-medium flex flex-col px-[32px] ">
-              <div className="flex items-center h-[48px] mb-2">Home</div>
-              <ul>
-                {items.map((item) => (
-                  <li
-                    key={item.id}
-                    className="flex items-center h-[48px] mb-2 justify-between"
-                  >
-                    <span className="w-full">{item.name}</span>
-                    {/* Arrow Icon */}
-                    <a href="#" onClick={() => handleItemClick(item)}>
-                      <img
-                        src={ArrowRight}
-                        alt="Search"
-                        className="w-[40px] h-[40px]"
-                      />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
 
-        {/* Sub-sidebar (shown when an item is clicked) */}
-        {selectedItem && !selectedSubItem && (
-          <div className="pt-[16px]">
-            <div className="font-medium flex flex-col">
-              <div className="flex items-center h-[48px] mb-2 px-[16px] justify-between border-b border-b-black-300">
-                <a href="#" onClick={handleMainBackClick}>
-                  <img
-                    src={ArrowLeft}
-                    alt="Search"
-                    className="w-[40px] h-[40px]"
-                  />
-                </a>
-                <h2 className="text-h6Bold w-[225px]">{selectedItem.name}</h2>
-              </div>
-              <ul className="px-[32px]">
-                {selectedItem.subItems.map((subItem, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center h-[48px] mb-2 justify-between"
-                  >
-                    <span className="w-full">{subItem.name}</span>
-                    {/* Arrow Icon */}
-                    <a href="#" onClick={() => handleSubItemClick(subItem)}>
-                      <img
-                        src={ArrowRight}
-                        alt="Search"
-                        className="w-[40px] h-[40px]"
-                      />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
+      {/* Sidebar */}
+      <aside className="bg-white min-w-[86%] h-full shadow-lg rounded-r-xl z-40" onClick={e => e.stopPropagation()}>
+        { parentMenuItem !== null && renderTitleBar()}
 
-        {/* Sub-sub-sidebar (shown when a sub-item is clicked) */}
-        {selectedSubItem && (
-          <div className="pt-[16px]">
-            <div className="font-medium flex flex-col">
-              <div className="flex items-center h-[48px] mb-2 px-[16px] justify-between border-b border-b-black-300">
-                <a href="#" onClick={handleBackClick}>
-                  <img
-                    src={ArrowLeft}
-                    alt="Search"
-                    className="w-[40px] h-[40px]"
-                  />
-                </a>
-                <h2 className="text-h6Bold w-[225px]">
-                  {selectedSubItem.name}
-                </h2>
-              </div>
-              <ul className="px-[32px] text-subTitle">
-                {selectedSubItem.subSubItems.map((subSubItem, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center h-[48px] pl-[10px] mb-2 justify-between hover:bg-limeGreen-700 transition-colors duration-200"
-                  >
-                    {subSubItem}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
-      </div>
-    </aside>
+        <div className="">
+          { !isCategoryFetched && <p className="mx-8 my-4">Loading...</p> }
+          <ul className="my-5 text-lg px-8">
+            {listMenuItem()}
+          </ul>
+        </div>
+      </aside>
+      
+    </div>
   );
 }
 
