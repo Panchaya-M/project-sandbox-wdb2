@@ -1,4 +1,5 @@
 import axios from "axios";
+
 export async function getCollection() {
   const result = await axios.get(
     "https://api.storefront.wdb.skooldio.dev/collections"
@@ -16,15 +17,42 @@ export async function getCollection() {
   return [];
 }
 
+export async function getCollections() {
+  const result = await axios.get(
+    "https://api.storefront.wdb.skooldio.dev/collections"
+  );
+
+  if (
+    Array.isArray(result.data) &&
+    result.data.length > 0
+  ) {
+    return result.data
+  }
+
+  return [];
+}
+
+
 export async function getProductByCategory(
+  collection = null,
   categories = [],
   fieldName = "name",
   sort = "asc"
 ) {
   const categoriesQuery = categories.join(",");
 
+  const queries = [`&sort=${fieldName}:${sort}`]
+
+  if (collection !== null) {
+    queries.push(`collection=${collection}`)
+  }
+
+  if (categoriesQuery !== '') {
+    queries.push(`categories=${categoriesQuery}`)
+  }
+
   const result = await axios.get(
-    `https://api.storefront.wdb.skooldio.dev/products?${ categoriesQuery === '' ? '' : `categories=${categoriesQuery}` }&sort=${fieldName}:${sort}`
+    `https://api.storefront.wdb.skooldio.dev/products?${queries.join('&')}`
   );
 
   if (result.data && Array.isArray(result.data.data) && result.data.data.length > 0) {

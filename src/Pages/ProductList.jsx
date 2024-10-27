@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import DefaultLayout from "../Components/Layouts/DefaultLayout";
 import Arrow from "../assets/arrow_down.svg";
-import { getAllCategory, getChildrenCategories, getParentCategory, getProductByCategory } from "../api";
+import { getAllCategory, getChildrenCategories, getCollections, getParentCategory, getProductByCategory } from "../api";
 import { ProductCard } from "../Components";
 
 /**
@@ -22,7 +21,9 @@ import { ProductCard } from "../Components";
  * @param (permalink: string) onSelectFilter
  * @returns
  */
-const Filter = ({ categories, onSelectFilter, selectedFilter }) => {
+const Filter = ({ items, onSelectFilter, selectedFilter }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   // On select filter
   function onSelect(id, permalink, name) {
     // Redirect to category page
@@ -33,12 +34,14 @@ const Filter = ({ categories, onSelectFilter, selectedFilter }) => {
 
   // List filter item
   const listFilterItem = (items) => {
+    if (items === undefined || !isOpen) return
+
     return items.map((item) => {
       return (
         <button
           key={`filter-item-${item.id}`}
           className={`${
-            selectedFilter === item.id ? "bg-limeGreen" : ""
+            selectedFilter === item.permalink ? "bg-limeGreen" : ""
           } p-2.5 text-sm block w-full text-left`}
           onClick={() => onSelect(item.id, item.permalink, item.name)}
         >
@@ -50,30 +53,42 @@ const Filter = ({ categories, onSelectFilter, selectedFilter }) => {
 
   // List filter group
   const listFilterGroup = () => {
-    return categories.map((category) => {
+    return items.map((item) => {
       return (
-        <div key={`group-${category.name}`}>
+        <div key={`group-${item.name}`}>
           <div className="">
             <button
               className={`
-                  block w-full text-left text-lg font-semibold py-3
-                  ${selectedFilter === category.id ? "bg-limeGreen" : ""}
+                  flex w-full text-left text-lg font-semibold py-3 px-2
+                  justify-between items-center
+                  ${selectedFilter === item.id ? "bg-limeGreen" : ""}
                 `}
 
-              onClick={() => category.permalink && category.id && onSelect(category.id, category.permalink, category.name)}
+              onClick={() => {
+                if (item.children && item.children.length > 0) {
+                  setIsOpen(!isOpen);
+                } else {
+                  item.permalink && item.id && onSelect(item.id, item.permalink, item.name)
+                }
+              }}
             >
-              {category.name}
+              {item.name}
+              {
+                item.children && item.children.length > 0 && (
+                  <img src={Arrow} alt="Arrow Down" className={`pl-4 relative transition-transform ${ isOpen ? 'rotate-180 translate-x-4' : 'rotate-0' }`} />
+                )
+              }
             </button>
           </div>
-          <div className="">{listFilterItem(category.children)}</div>
+          <div className="pl-2">{listFilterItem(item.children)}</div>
         </div>
       );
     });
   };
 
-  // If categories is undefined
+  // If items is undefined
   // Show loading
-  if (categories === undefined) {
+  if (items === undefined) {
     return <div>Loading...</div>;
   }
 
@@ -208,9 +223,12 @@ const ProductListPage = () => {
   const [sortBy, setSortBy] = useState(["price", "asc"]);
   const [categories, setCategories] = useState({});
   const [products, setProducts] = useState([]);
+  const [collections, setCollections] = useState([]);
 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedPermalink, setSelectedPermalink] = useState(null);
+
+  const [selectedCollection, setSelectedCollection] = useState(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState('')
@@ -218,11 +236,12 @@ const ProductListPage = () => {
   useEffect(() => {
     setSelectedCategory(null);
     setSelectedPermalink(null);
+    _getCollections()
   }, [params])
 
   useEffect(() => {
     _getCategoryPageDetail();
-  }, [sortBy, selectedPermalink, params]);
+  }, [sortBy, selectedPermalink, selectedCollection, params]);
 
   useEffect(() => {
     _getChildrenCategories();
@@ -297,6 +316,7 @@ const ProductListPage = () => {
   async function _getProductByCategory() {
     setIsLoading(true);
     const result = await getProductByCategory(
+      selectedCollection,
       selectedPermalink === null ? [params.category] : [selectedPermalink],
       sortBy[0],
       sortBy[1]
@@ -316,6 +336,14 @@ const ProductListPage = () => {
       );
       setCategories(categoriesList);
     }
+  }
+
+  async function _getCollections() {
+    const result = await getCollections();
+
+    setCollections([
+      { id: '', name: 'Collections', children: result },
+    ])
   }
 
   function onSelectFilter(id, permalink, categoryName) {
@@ -364,9 +392,17 @@ const ProductListPage = () => {
           <div className="col-span-1 max-md:hidden">
             {/* Filter */}
             <Filter
-              categories={Object.values(categories)}
+              items={Object.values(categories)}
               onSelectFilter={onSelectFilter}
               selectedFilter={selectedFilter}
+            />
+
+            <Filter
+              items={collections}
+              onSelectFilter={(id, permalink, name) => {
+                setSelectedCollection(permalink)
+              }}
+              selectedFilter={selectedCollection}
             />
           </div>
 
