@@ -55,7 +55,11 @@ export async function getProductByCategory(
     `https://api.storefront.wdb.skooldio.dev/products?${queries.join('&')}`
   );
 
-  if (result.data && Array.isArray(result.data.data) && result.data.data.length > 0) {
+  if (
+    result.data &&
+    Array.isArray(result.data.data) &&
+    result.data.data.length > 0
+  ) {
     return result.data.data;
   }
 
@@ -99,6 +103,13 @@ export function getAllProducts(params) {
 
 export function createNewCart(body) {
   return axios.post("https://api.storefront.wdb.skooldio.dev/carts", body);
+}
+
+export function addProductToExistingCart(cartId, body) {
+  return axios.post(
+    `https://api.storefront.wdb.skooldio.dev/carts/${cartId}/items`,
+    body
+  );
 }
 
 export async function getCategoryDetail(id) {
