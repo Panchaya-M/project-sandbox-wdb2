@@ -28,6 +28,10 @@ function Sidebar({ isOpen, setIsOpen }) {
   useEffect(() => {
     categorizeMenu()
   }, [fetchedCategories])
+
+  function _getCategoryDetail(id) {
+    return fetchedCategories.find((category) => category.id === id)
+  }
   
   function categorizeMenu() {
     setParentMenuItem(null)
@@ -54,7 +58,7 @@ function Sidebar({ isOpen, setIsOpen }) {
           }
         }
         // Add the item to the parent's children
-        _menu[item.parentId].children.push({...item, permalink: `/products/${item.permalink}`,})
+        _menu[item.parentId].children.push({...item, permalink: `/products/${_getCategoryDetail(item.parentId).permalink}/${item.permalink}`,})
       }
     })
 

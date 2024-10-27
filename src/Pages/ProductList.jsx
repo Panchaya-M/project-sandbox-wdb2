@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import DefaultLayout from "../Components/Layouts/DefaultLayout";
 import Arrow from "../assets/arrow_down.svg";
@@ -22,16 +22,12 @@ import { ProductCard } from "../Components";
  * @param (permalink: string) onSelectFilter
  * @returns
  */
-const Filter = ({ categories, onSelectFilter }) => {
-  const [selected, setSelected] = useState("");
-
+const Filter = ({ categories, onSelectFilter, selectedFilter }) => {
   // On select filter
   function onSelect(id, permalink, name) {
-    setSelected(id);
-
     // Redirect to category page
     if (typeof onSelectFilter === "function") {
-      onSelectFilter(permalink, name);
+      onSelectFilter(id, permalink, name);
     }
   }
 
@@ -42,7 +38,7 @@ const Filter = ({ categories, onSelectFilter }) => {
         <button
           key={`filter-item-${item.id}`}
           className={`${
-            selected === item.id ? "bg-limeGreen" : ""
+            selectedFilter === item.id ? "bg-limeGreen" : ""
           } p-2.5 text-sm block w-full text-left`}
           onClick={() => onSelect(item.id, item.permalink, item.name)}
         >
@@ -61,7 +57,7 @@ const Filter = ({ categories, onSelectFilter }) => {
             <button
               className={`
                   block w-full text-left text-lg font-semibold py-3
-                  ${selected === category.id ? "bg-limeGreen" : ""}
+                  ${selectedFilter === category.id ? "bg-limeGreen" : ""}
                 `}
 
               onClick={() => category.permalink && category.id && onSelect(category.id, category.permalink, category.name)}
@@ -207,6 +203,7 @@ const Sort = (props) => {
 // Main component
 const ProductListPage = () => {
   const params = useParams();
+  const navigate = useNavigate();
   const [pageDetail, setPageDetail] = useState({ name: null, id: null });
   const [sortBy, setSortBy] = useState(["price", "asc"]);
   const [categories, setCategories] = useState({});
@@ -216,6 +213,7 @@ const ProductListPage = () => {
   const [selectedPermalink, setSelectedPermalink] = useState(null);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedFilter, setSelectedFilter] = useState('')
 
   useEffect(() => {
     setSelectedCategory(null);
@@ -279,19 +277,20 @@ const ProductListPage = () => {
   }
 
   async function _getCategoryPageDetail() {
-    const categories = await getParentCategory();
+    const categories = await getAllCategory();
     const currentCategory = categories.find(category => category.permalink === params.category);
 
     if (currentCategory) {
       setPageDetail(currentCategory);
     }
+
+    if (params.subCategory) {
+      const subCategory = categories.find(category => category.permalink === params.subCategory);
+      setSelectedPermalink(subCategory.permalink);
+      setSelectedCategory(subCategory.name);
+      setSelectedFilter(subCategory.id);
+    }
   }
-
-  // async function _getAllCategories() {
-  //   const result = await getAllCategory();
-
-  //   setCategories(createCategoryList(result));
-  // }
 
   async function _getProductByCategory() {
     setIsLoading(true);
@@ -317,13 +316,16 @@ const ProductListPage = () => {
     }
   }
 
-  function onSelectFilter(permalink, categoryName) {
+  function onSelectFilter(id, permalink, categoryName) {
+    setSelectedFilter(id)
     setSelectedPermalink(permalink, categoryName);
     
     if (permalink === pageDetail.permalink) {
-      setSelectedCategory(null);
+      navigate(`/products/${permalink}`);
+      // setSelectedCategory(null);
     } else {
-      setSelectedCategory(categoryName);
+      navigate(`/products/${params.category}/${permalink}`);
+      // setSelectedCategory(categoryName);
     }
   }
 
@@ -362,6 +364,7 @@ const ProductListPage = () => {
             <Filter
               categories={Object.values(categories)}
               onSelectFilter={onSelectFilter}
+              selectedFilter={selectedFilter}
             />
           </div>
 
