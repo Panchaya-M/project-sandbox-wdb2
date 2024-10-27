@@ -14,10 +14,10 @@ const ProductGallery = ({
   isPromotion,
 }) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
-  const percentDiscount = (((price - promotionPrice) / price) * 100).toFixed(2);
+  const percentDiscount = Math.round(((price - promotionPrice) / price) * 100);
 
   return (
-    <div className="w-full max-w-[764px] mx-auto">
+    <div className="w-full max-w-[576px] 3xl:max-w-[764px] mx-auto">
       {/* Main Slider */}
       <div className="relative mb-4 w-full max-h-[764px] overflow-hidden">
         <Swiper
