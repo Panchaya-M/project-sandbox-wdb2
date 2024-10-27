@@ -406,7 +406,7 @@ const ProductListPage = () => {
 
   return (
     <>
-      <div className="container mx-auto my-24">
+      <div className="container mx-auto max-md:mt-6 my-24">
         <div className="grid grid-cols-4 gap-x-10">
           <div className="col-span-1 max-md:hidden">
             {/* Filter */}
