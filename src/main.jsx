@@ -7,6 +7,7 @@ import ProductListPage from "./Pages/ProductList.jsx";
 import ProductDetailPage from "./Pages/ProductDetail.jsx";
 import DefaultLayout from "./Components/Layouts/DefaultLayout.jsx";
 import SummaryPage from "./Pages/SummaryPage.jsx";
+import { CartProvider } from "./Components/contexts/CartContext.jsx";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
             path: "/products/:category",
             element: <ProductListPage />,
           },
+          {
+            path: "/products/:category/:subCategory",
+            element: <ProductListPage />,
+          },
         ],
       },
       {
@@ -41,6 +46,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <CartProvider>
+      <RouterProvider router={router} />
+    </CartProvider>
   </StrictMode>
 );

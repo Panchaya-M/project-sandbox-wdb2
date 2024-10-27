@@ -19,7 +19,7 @@ const FixedMenuItems = [
   { name: "Collections", link: "collections" },
 ];
 
-function Navbar() {
+function Navbar({ setIsSidebarOpen, isSidebarOpen }) {
   const [menuItems, setMenuItems] = useState([]);
 
   useEffect(() => {
@@ -41,7 +41,9 @@ function Navbar() {
           {/* Logo Container */}
           <div className="flex gap-x-4">
             {/* Hamburger Icon */}
-            <img className="flex sx:hidden" src={Hamburger} alt="Hamburger" />
+            <button className="" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+              <img className="flex sx:hidden" src={Hamburger} alt="Hamburger" />
+            </button>
             {/* Logo Image */}
             <Link to="/"><img src="/images/nav-logo-white.png" alt="Logo" /></Link>
           </div>

@@ -2,17 +2,20 @@
 import { useEffect, useState } from "react";
 import useAlert from "../hooks/useAlert";
 import { Link, useParams } from "react-router-dom";
-import { createNewCart, getProductDetail } from "../api";
 import {
-  Button,
-  Ratings,
-  SecondaryButton,
-  SimilarProducts,
-} from "../Components";
+  addProductToExistingCart,
+  createNewCart,
+  getProductDetail,
+} from "../api";
+import { Button, Ratings, SecondaryButton } from "../Components";
 import Modal from "../Components/UI/Modal";
 import Heart from "../assets/heart.svg";
 import Arrow from "../assets/arrow_down.svg";
 import Loading from "../Components/UI/Loading";
+import ProductGallery from "../Components/UI/ProductGallery";
+import { useContext } from "react";
+import { CartContext } from "../Components/contexts/CartContext";
+import RandomProducts from "../Components/UI/RandomProducts";
 
 // Define the custom size order
 const sizeOrder = ["S", "M", "L", "XL"];
@@ -49,7 +52,9 @@ const PriceDisplay = ({
       <div>
         <span
           className={`text-h4Bold ${
-            isPromotion ? "text-white bg-danger px-2 py-2.5" : "text-black-900"
+            isPromotion && !isOutOfStock
+              ? "text-white bg-danger px-2 py-2.5"
+              : "text-black-900"
           }`}
         >
           THB {formatPrice(promotionPrice)}
@@ -81,6 +86,7 @@ const Options = ({ sectionName, customGap, children }) => {
 function ProductDetail() {
   const alert = useAlert();
   const { permalink } = useParams();
+  const { cartId, setCartId } = useContext(CartContext);
 
   const [product, setProduct] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -171,7 +177,12 @@ function ProductDetail() {
           },
         ],
       };
-      await createNewCart(params);
+      if (cartId) {
+        await addProductToExistingCart(cartId, params);
+      } else {
+        const result = await createNewCart(params);
+        setCartId(result.data.id);
+      }
       openAddedToCartModal();
     } catch (error) {
       alert.error(error.response.data.message);
@@ -182,8 +193,16 @@ function ProductDetail() {
     <>
       {product ? (
         <>
-          <div className="container mx-auto mt-20 flex flex-col md:flex-row gap-10">
-            <div className="flex-1">Carousel</div>
+          <div className="container mx-auto mt-6 xxl:mt-20 flex flex-col lg:flex-row gap-10 mb-12">
+            <div className="flex-1">
+              <ProductGallery
+                imageUrls={product.imageUrls}
+                isOutOfStock={isOutOfStock}
+                price={product.price}
+                promotionPrice={product.promotionalPrice}
+                isPromotion={product.promotionalPrice < product.price}
+              />
+            </div>
 
             {/* Product Detail */}
             <div className="flex-1 mb-4">
@@ -315,7 +334,7 @@ function ProductDetail() {
               </Options>
 
               {/* Add to cart button */}
-              <div className="mb-12">
+              <div className="mb-6">
                 <div className="flex gap-2">
                   <Button
                     text="Add to cart"
@@ -373,7 +392,12 @@ function ProductDetail() {
             </div>
           </div>
 
-          <SimilarProducts category={product?.categories?.[0]} />
+          <RandomProducts
+            header="People also like these"
+            headerAlign="left"
+            excludeId={product?.id}
+            category={product?.categories?.[0]}
+          />
         </>
       ) : (
         <Loading />
