@@ -289,6 +289,8 @@ const ProductListPage = () => {
       setSelectedPermalink(subCategory.permalink);
       setSelectedCategory(subCategory.name);
       setSelectedFilter(subCategory.id);
+    } else {
+      setSelectedFilter(currentCategory.id);
     }
   }
 
