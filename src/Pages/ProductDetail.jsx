@@ -197,7 +197,7 @@ function ProductDetail() {
     <>
       {product ? (
         <>
-          <div className="container mx-auto mt-20 flex flex-col xxl:flex-row gap-10 mb-12">
+          <div className="container mx-auto mt-6 xxl:mt-20 flex flex-col lg:flex-row gap-10 mb-12">
             <div className="flex-1">
               <ProductGallery
                 imageUrls={product.imageUrls}
