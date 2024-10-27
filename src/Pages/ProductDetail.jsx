@@ -56,7 +56,9 @@ const PriceDisplay = ({
       <div>
         <span
           className={`text-h4Bold ${
-            isPromotion ? "text-white bg-danger px-2 py-2.5" : "text-black-900"
+            isPromotion && !isOutOfStock
+              ? "text-white bg-danger px-2 py-2.5"
+              : "text-black-900"
           }`}
         >
           THB {formatPrice(promotionPrice)}
@@ -195,9 +197,15 @@ function ProductDetail() {
     <>
       {product ? (
         <>
-          <div className="container mx-auto mt-20 flex flex-col xxl:flex-row gap-10">
+          <div className="container mx-auto mt-20 flex flex-col xxl:flex-row gap-10 mb-12">
             <div className="flex-1">
-              <ProductGallery imageUrls={product.imageUrls} />
+              <ProductGallery
+                imageUrls={product.imageUrls}
+                isOutOfStock={isOutOfStock}
+                price={product.price}
+                promotionPrice={product.promotionalPrice}
+                isPromotion={product.promotionalPrice < product.price}
+              />
             </div>
 
             {/* Product Detail */}
@@ -330,7 +338,7 @@ function ProductDetail() {
               </Options>
 
               {/* Add to cart button */}
-              <div className="mb-12">
+              <div className="mb-6">
                 <div className="flex gap-2">
                   <Button
                     text="Add to cart"

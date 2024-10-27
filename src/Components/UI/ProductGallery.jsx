@@ -6,13 +6,20 @@ import "swiper/css/free-mode";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
 
-const ProductGallery = ({ imageUrls }) => {
+const ProductGallery = ({
+  imageUrls,
+  isOutOfStock,
+  price,
+  promotionPrice,
+  isPromotion,
+}) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const percentDiscount = (((price - promotionPrice) / price) * 100).toFixed(2);
 
   return (
-    <div className="w-full max-w-[670px] mx-auto">
+    <div className="w-full max-w-[764px] mx-auto">
       {/* Main Slider */}
-      <div className="relative mb-4 max-w-[670px] max-h-[670px] overflow-hidden">
+      <div className="relative mb-4 w-full max-h-[764px] overflow-hidden">
         <Swiper
           spaceBetween={10}
           navigation={true}
@@ -29,11 +36,22 @@ const ProductGallery = ({ imageUrls }) => {
                   src={url}
                   alt={`Product view ${index + 1}`}
                   loading={index === 0 ? "eager" : "lazy"}
+                  className={isOutOfStock ? "brightness-50" : ""}
                 />
               </div>
             </SwiperSlide>
           ))}
         </Swiper>
+        {isOutOfStock && (
+          <div className="absolute top-6 right-0 out-of-stock z-[99]">
+            Out of stock
+          </div>
+        )}
+        {isPromotion && (
+          <div className="absolute top-6 right-0 percent-discount z-[99]">
+            - {percentDiscount}%
+          </div>
+        )}
       </div>
 
       {/* Thumbnail Slider */}
@@ -52,7 +70,7 @@ const ProductGallery = ({ imageUrls }) => {
               <img
                 src={url}
                 alt={`Thumbnail ${index + 1}`}
-                className="w-full h-full object-cover cursor-pointer"
+                className={`w-full h-full object-cover cursor-pointer ${isOutOfStock ? "brightness-50" : ""}`}
                 loading="lazy"
               />
             </button>

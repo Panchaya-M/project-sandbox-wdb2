@@ -42,6 +42,10 @@ body {
   @apply px-2.5 py-2 bg-danger text-bodyText text-white;
 }
 
+.out-of-stock {
+  @apply px-2.5 py-2 bg-black-900 text-bodyText text-white;
+}
+
 .dot-loading {
   @apply w-4 h-4 bg-limeGreen-900 rounded-full animate-bounce;
 }
@@ -51,12 +55,12 @@ body {
 }
 
 .thumbs-swiper .swiper-slide {
-  opacity: 0.4;
-  transition: opacity 0.3s;
+  transition: all 0.3s;
 }
 
 .thumbs-swiper .swiper-slide-thumb-active {
-  opacity: 1;
+  transform: scale(0.95) !important;
+  transition: all 0.3s;
 }
 
 .swiper-button-prev,
