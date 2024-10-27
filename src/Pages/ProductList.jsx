@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import Arrow from "../assets/arrow_down.svg";
@@ -110,16 +110,22 @@ const sortOptions = [
 const Sort = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState("price-asc");
+  const oldSelected = useRef(selected)
 
-  function onChangeSort(value) {
-    setSelected(value);
-    setIsOpen(false);
-
+  function applySort() {
     if (
       props.onChangeSort !== undefined &&
       typeof props.onChangeSort === "function"
     ) {
-      props.onChangeSort(value);
+      props.onChangeSort(selected);
+    }
+    setIsOpen(false);
+  }
+
+  function onChangeSort(changeOnSelect = false, value) {
+    setSelected(value);
+    if (changeOnSelect) {
+      applySort();
     }
   }
 
@@ -134,6 +140,27 @@ const Sort = (props) => {
     ) {
       props.onChangeSort("price-asc");
     }
+  }
+
+  function listSortOptions(changeOnSelect = false) {
+    return sortOptions.map((option) => {
+      return (
+        <button
+          key={`sort-option-${option.value}`}
+          className="block w-full text-left flex justify-start items-center gap-x-4"
+          onClick={() => onChangeSort(changeOnSelect, option.value)}
+        >
+          {/* radio button */}
+          <div className="w-6 h-6 block bg-white border-2 border-limeGreen rounded-full overflow-hidden p-1 inline-block">
+            {selected === option.value && (
+              <div className="w-full h-full bg-limeGreen rounded-full" />
+            )}
+          </div>
+
+          <span className="text-sm">{option.name}</span>
+        </button>
+      );
+    })
   }
 
   return (
@@ -169,7 +196,10 @@ const Sort = (props) => {
           <div className="md:hidden">
             <div className="grid grid-cols-3 text-md">
               <div className="col text-left">
-                <button className="text-info" onClick={() => setIsOpen(false)}>Cancel</button>
+                <button className="text-info" onClick={() => {
+                  setSelected(oldSelected.current)
+                  setIsOpen(false)
+                  }}>Cancel</button>
               </div>
               <div className="col text-center font-semibold">
                 <p className="font-">
@@ -183,30 +213,17 @@ const Sort = (props) => {
           </div>
 
           {/* Sort options */}
-          <div className="grid gap-y-4">
-            {sortOptions.map((option) => {
-              return (
-                <button
-                  key={`sort-option-${option.value}`}
-                  className="block w-full text-left flex justify-start items-center gap-x-4"
-                  onClick={() => onChangeSort(option.value)}
-                >
-                  {/* radio button */}
-                  <div className="w-6 h-6 block bg-white border-2 border-limeGreen rounded-full overflow-hidden p-1 inline-block">
-                    {selected === option.value && (
-                      <div className="w-full h-full bg-limeGreen rounded-full" />
-                    )}
-                  </div>
+          <div className="grid gap-y-4 md:hidden">
+            {listSortOptions()}
+          </div>
 
-                  <span className="text-sm">{option.name}</span>
-                </button>
-              );
-            })}
+          <div className="grid gap-y-4 hidden md:grid">
+            {listSortOptions(true)}
           </div>
 
           {/* Mobile: Apply sort buttons */}
           <div className="md:hidden mt-0">
-            <button className="block w-full p-4 text-center bg-black text-white">Apply</button>
+            <button className="block w-full p-4 text-center bg-black text-white" onClick={applySort}>Apply</button>
           </div>
         </div>
       </div>
