@@ -2,7 +2,11 @@
 import { useEffect, useState } from "react";
 import useAlert from "../hooks/useAlert";
 import { Link, useParams } from "react-router-dom";
-import { createNewCart, getProductDetail } from "../api";
+import {
+  addProductToExistingCart,
+  createNewCart,
+  getProductDetail,
+} from "../api";
 import {
   Button,
   Ratings,
@@ -14,6 +18,8 @@ import Heart from "../assets/heart.svg";
 import Arrow from "../assets/arrow_down.svg";
 import Loading from "../Components/UI/Loading";
 import ProductGallery from "../Components/UI/ProductGallery";
+import { useContext } from "react";
+import { CartContext } from "../Components/contexts/CartContext";
 
 // Define the custom size order
 const sizeOrder = ["S", "M", "L", "XL"];
@@ -82,6 +88,7 @@ const Options = ({ sectionName, customGap, children }) => {
 function ProductDetail() {
   const alert = useAlert();
   const { permalink } = useParams();
+  const { cartId, setCartId } = useContext(CartContext);
 
   const [product, setProduct] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -172,7 +179,12 @@ function ProductDetail() {
           },
         ],
       };
-      await createNewCart(params);
+      if (cartId) {
+        await addProductToExistingCart(cartId, params);
+      } else {
+        const result = await createNewCart(params);
+        setCartId(result.data.id);
+      }
       openAddedToCartModal();
     } catch (error) {
       alert.error(error.response.data.message);
