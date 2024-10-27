@@ -22,8 +22,10 @@ function Sidebar({ isOpen, setIsOpen }) {
   const [previousPage, setPreviousPage] = useState(null)
 
   useEffect(() => {
-    _getAllCategory()
-  }, [])
+    if (isOpen) {
+      _getAllCategory()
+    }
+  }, [isOpen])
 
   useEffect(() => {
     categorizeMenu()
@@ -41,14 +43,16 @@ function Sidebar({ isOpen, setIsOpen }) {
 
     let _menu = {}
 
+    console.log('>> fetchedCategories', fetchedCategories)
+
     fetchedCategories.forEach((item) => {
       // If the item is a parent
       if (item.parentId === null) {
         // Add the item to the menu
         _menu[item.id] = {
           ...item,
+          children: [],
           ..._menu[item.id],
-          children: []
         }
         // If the item is a child
       } else {
@@ -59,6 +63,8 @@ function Sidebar({ isOpen, setIsOpen }) {
         }
         // Add the item to the parent's children
         _menu[item.parentId].children.push({...item, permalink: `/products/${_getCategoryDetail(item.parentId).permalink}/${item.permalink}`,})
+        console.log('>> item', item)
+        console.log('>>> _menu[item.parentId]', _menu[item.parentId])
       }
     })
 
