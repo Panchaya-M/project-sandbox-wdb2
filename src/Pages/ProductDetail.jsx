@@ -7,12 +7,7 @@ import {
   createNewCart,
   getProductDetail,
 } from "../api";
-import {
-  Button,
-  Ratings,
-  SecondaryButton,
-  SimilarProducts,
-} from "../Components";
+import { Button, Ratings, SecondaryButton } from "../Components";
 import Modal from "../Components/UI/Modal";
 import Heart from "../assets/heart.svg";
 import Arrow from "../assets/arrow_down.svg";
@@ -20,6 +15,7 @@ import Loading from "../Components/UI/Loading";
 import ProductGallery from "../Components/UI/ProductGallery";
 import { useContext } from "react";
 import { CartContext } from "../Components/contexts/CartContext";
+import RandomProducts from "../Components/UI/RandomProducts";
 
 // Define the custom size order
 const sizeOrder = ["S", "M", "L", "XL"];
@@ -396,7 +392,12 @@ function ProductDetail() {
             </div>
           </div>
 
-          <SimilarProducts category={product?.categories?.[0]} />
+          <RandomProducts
+            header="People also like these"
+            headerAlign="left"
+            excludeId={product?.id}
+            category={product?.categories?.[0]}
+          />
         </>
       ) : (
         <Loading />
