@@ -1,16 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import Button, { ButtonCustom } from "../UI/Button.jsx";
 import Bill from "../../assets/bill.svg";
-import CreditCard from "../../assets/credit-card.svg";
 import { Link } from "react-router-dom";
+import ConfirmationModal from "./ConfirmationModal.jsx";
 
 const CartSummary = ({ items }) => {
+  const [checkout, setCheckout] = useState(false);
+  console.log("checkout", checkout);
+
   const subtotal = items.reduce(
     (sum, item) => sum + item.price * item.selectedQuantity,
     0
   );
   const itemCount = items.reduce((sum, item) => sum + item.selectedQuantity, 0);
+
+  const openCheckoutModal = () => {
+    setCheckout(true);
+  };
+
+  const closeCheckoutModal = () => {
+    setCheckout(false);
+  };
 
   return (
     // <div className="xxl:w-[616px] xxl:h-[464px] xl:w-[440px] xl:h-[464px] bg-white w-full md:w-1/3">
@@ -69,14 +80,19 @@ const CartSummary = ({ items }) => {
           <Button
             text="Check out"
             customClassName="transition-colors duration-200"
+            onClick={() => openCheckoutModal()}
           ></Button>
-          <Link to="/products" className="flex-1">
+          <Link to="/products" className="no-underline hover:no-underline">
             <ButtonCustom
               text="Continue shopping"
-              customClassName="transition-colors duration-200 w-full h-full"
+              customClassName="transition-colors duration-200 w-full "
             ></ButtonCustom>
           </Link>
         </div>
+
+        {checkout && (
+          <ConfirmationModal isOpen={true} onClose={closeCheckoutModal} />
+        )}
 
         <div className="mt-4 pt-4 border-t">
           <div className="flex flex-wrap gap-2 justify-center">

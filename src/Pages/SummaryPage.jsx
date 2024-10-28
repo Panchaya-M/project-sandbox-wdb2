@@ -11,6 +11,7 @@ import RandomProducts from "../Components/UI/RandomProducts.jsx";
 import { CartContext } from "../Components/contexts/CartContext.jsx";
 import { useEffect, useContext, useState } from "react";
 import { getCartById, getProductDetail } from "../api.js";
+import CartSkeleton from "../Components/UI/CartSkeleton.jsx";
 
 const VariantSection = ({ children, isEmpty }) => {
   return (
@@ -126,44 +127,8 @@ export default function SummaryPage() {
     console.log("mappedProducts after ", mappedProducts);
   };
 
-  const ProductSkeleton = () => (
-    <div className="flex items-center space-x-4 p-4">
-      {/* Product image skeleton */}
-      <div className="w-16 h-16 bg-gray-200 rounded animate-pulse" />
-
-      <div className="flex-1 space-y-3">
-        {/* Title skeleton */}
-        <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
-
-        {/* Price skeleton */}
-        <div className="h-4 bg-gray-200 rounded w-1/4 animate-pulse" />
-
-        {/* Options skeleton */}
-        <div className="flex space-x-4">
-          <div className="h-8 bg-gray-200 rounded w-20 animate-pulse" />
-          <div className="h-8 bg-gray-200 rounded w-20 animate-pulse" />
-        </div>
-      </div>
-    </div>
-  );
-
-  const ProductListSkeleton = () => {
-    return (
-      <div className="w-full max-w-2xl mx-auto">
-        {/* You can adjust the number of skeleton items to match your typical list length */}
-        {[1, 2, 3].map((index) => (
-          <div key={index}>
-            <ProductSkeleton />
-            {/* Add divider except for last item */}
-            {index < 3 && <div className="border-b border-gray-100" />}
-          </div>
-        ))}
-      </div>
-    );
-  };
-
   if (isLoading) {
-    return <ProductListSkeleton />;
+    return <CartSkeleton />;
   }
 
   return (
