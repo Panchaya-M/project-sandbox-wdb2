@@ -6,17 +6,26 @@ import CardEmpty from "../../assets/images/empty_cart.png";
 import Delete from "../../assets/delete.svg";
 import Arrow from "../../assets/arrow_down.svg";
 
-function SelectBox({ type, name, items }) {
+function SelectBox({ type, name, items, defaultValue, onChange }) {
   console.log("items", items);
+  console.log("default", defaultValue);
+  let isDisabled = false;
+  if (defaultValue === undefined) isDisabled = true;
+  if (items === undefined) items = [];
+
   return (
     <div className="relative">
       <select
         id={`${type}-${name}`}
-        // defaultValue={defaultColor}
-        className="block appearance-none w-full h-[54px] bg-white border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+        defaultValue={defaultValue}
+        disabled={isDisabled}
+        onChange={onChange}
+        className={`block appearance-none w-full h-[54px]  border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none  focus:border-gray-500 ${
+          isDisabled ? "bg-gray-200" : "bg-white focus:bg-white"
+        }`}
       >
-        {items.map((item) => (
-          <option key={item} value={item}>
+        {items.map((item, index) => (
+          <option key={index} value={item}>
             {item}
           </option>
         ))}
@@ -28,23 +37,30 @@ function SelectBox({ type, name, items }) {
   );
 }
 
-const CartItem = ({ item }) => {
+const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
   const [selectedColor, setSelectedColor] = useState(item.defaultColor);
   const [selectedSize, setSelectedSize] = useState(item.defaultSize);
   const [selectedQuantity, setSelectedQuantity] = useState(
     item.defaultQuantity
   );
 
+  console.log(">>>>  ", item);
   const handleQuantityChange = (e) => {
-    setSelectedQuantity(Number(e.target.value));
+    const quantity = Number(e.target.value);
+    setSelectedQuantity(quantity);
+    updateProduct(item.id, { defaultQuantity: quantity });
   };
 
   const handleColorChange = (e) => {
-    setSelectedColor(e.target.value);
+    const color = e.target.value;
+    setSelectedColor(color);
+    updateProduct(item.id, { defaultColor: color });
   };
 
   const handleSizeChange = (e) => {
-    setSelectedSize(e.target.value);
+    const size = e.target.value;
+    setSelectedSize(size);
+    updateProduct(item.id, { defaultSize: size });
   };
 
   const handleRemove = () => {
@@ -84,7 +100,13 @@ const CartItem = ({ item }) => {
                 >
                   Color
                 </label>
-                <SelectBox type="color" name={item.name} items={item.colors} />
+                <SelectBox
+                  type="color"
+                  name={item.name}
+                  items={item.colors}
+                  defaultValue={item.defaultColor}
+                  onChange={(e) => onColorChange(e.target.value)}
+                />
               </div>
 
               <div className="col-span-1 sm:col-span-1 md:col-span-1">
@@ -94,7 +116,13 @@ const CartItem = ({ item }) => {
                 >
                   Size
                 </label>
-                <SelectBox type="size" name={item.name} items={item.sizes} />
+                <SelectBox
+                  type="size"
+                  name={item.name}
+                  items={item.sizes}
+                  defaultValue={item.defaultSize}
+                  onChange={(e) => onSizeChange(e.target.value)}
+                />
               </div>
 
               <div className="col-span-1 sm:col-span-1 md:col-span-1">
@@ -107,14 +135,16 @@ const CartItem = ({ item }) => {
                 <SelectBox
                   type="quantity"
                   name={item.name}
-                  items={[1, 2, 3, 4, 5]}
+                  items={item.quantities}
+                  defaultValue={item.defaultQuantity}
+                  onChange={(e) => onQuantityChange(Number(e.target.value))}
                 />
               </div>
             </div>
 
             <div className="flex flex-row items-end">
               <p className="text-subHeading">
-                THB {item.price.toLocaleString()}
+                THB {item.price.toLocaleString()}.00
               </p>
             </div>
           </div>
@@ -157,16 +187,6 @@ export function CartEmpty() {
 
 export default CartItem;
 
-// ({
-//     image,
-//     name,
-//     colors,
-//     sizes,
-//     defaultColor,
-//     defaultSize,
-//     defaultQuantity,
-//     price,
-//   })
 CartItem.propTypes = {
   item: PropTypes.shape({
     id: PropTypes.number.isRequired,

@@ -22,16 +22,12 @@ export async function getCollections() {
     "https://api.storefront.wdb.skooldio.dev/collections"
   );
 
-  if (
-    Array.isArray(result.data) &&
-    result.data.length > 0
-  ) {
-    return result.data
+  if (Array.isArray(result.data) && result.data.length > 0) {
+    return result.data;
   }
 
   return [];
 }
-
 
 export async function getProductByCategory(
   collection = null,
@@ -41,18 +37,18 @@ export async function getProductByCategory(
 ) {
   const categoriesQuery = categories.join(",");
 
-  const queries = [`&sort=${fieldName}:${sort}`]
+  const queries = [`&sort=${fieldName}:${sort}`];
 
   if (collection !== null) {
-    queries.push(`collection=${collection}`)
+    queries.push(`collection=${collection}`);
   }
 
-  if (categoriesQuery !== '') {
-    queries.push(`categories=${categoriesQuery}`)
+  if (categoriesQuery !== "") {
+    queries.push(`categories=${categoriesQuery}`);
   }
 
   const result = await axios.get(
-    `https://api.storefront.wdb.skooldio.dev/products?${queries.join('&')}`
+    `https://api.storefront.wdb.skooldio.dev/products?${queries.join("&")}`
   );
 
   if (
@@ -132,4 +128,25 @@ export async function getChildrenCategories(parentId) {
   }
 
   return categories.filter((category) => category.parentId === parentId);
+}
+
+export async function getCartById(cartId) {
+  if (!cartId) {
+    throw new Error("Cart ID is required");
+  }
+
+  try {
+    const result = await axios.get(
+      `https://api.storefront.wdb.skooldio.dev/carts/${cartId}`
+    );
+
+    if (result.data && result.data.id) {
+      return result.data;
+    }
+
+    return null; // return null if the cart is not found or empty response
+  } catch (error) {
+    console.error(`Failed to fetch cart by ID: ${cartId}, error`);
+    throw error; // re-throw the error to handle it in the calling function
+  }
 }
