@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import { Link } from "react-router-dom";
 
 // import BasketEmpty from "../../assets/basket-empty.svg";
@@ -7,30 +7,19 @@ import Heart from "../../assets/heart_w.svg";
 import Person from "../../assets/person_w.svg";
 import Cart from "../../assets/cart_w.svg";
 import Hamburger from "../../assets/hamburger.svg";
-import {getParentCategory} from '../../api';
+import { CategoryContext } from '../contexts/CategoryContext';
 
 function getLink(category) {
   return `/products/${category}`;
 }
 
-const FixedMenuItems = [
-  { name: "Men", link: "men" },
-  { name: "Women", link: "women" },
-  { name: "Collections", link: "collections" },
-];
-
 function Navbar({ setIsSidebarOpen, isSidebarOpen }) {
+  const { parentCategories } = useContext(CategoryContext);
   const [menuItems, setMenuItems] = useState([]);
 
   useEffect(() => {
-    getMenuItems()
-  }, [])
-
-  async function getMenuItems() {
-    const menuItems = await getParentCategory();
-
-    setMenuItems(menuItems);
-  }
+    setMenuItems(parentCategories);
+  }, [parentCategories])
 
   return (
     <nav className="bg-black text-white">
@@ -42,7 +31,7 @@ function Navbar({ setIsSidebarOpen, isSidebarOpen }) {
           <div className="flex gap-x-4">
             {/* Hamburger Icon */}
             <button className="" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-              <img className="flex sx:hidden" src={Hamburger} alt="Hamburger" />
+              <img className="flex md:hidden" src={Hamburger} alt="Hamburger" />
             </button>
             {/* Logo Image */}
             <Link to="/"><img src="/images/nav-logo-white.png" alt="Logo" /></Link>
@@ -50,7 +39,7 @@ function Navbar({ setIsSidebarOpen, isSidebarOpen }) {
 
           {/* Menu Container */}
           <div className="">
-            <ul className="hidden sx:flex gap-x-6">
+            <ul className="hidden md:flex gap-x-6">
               {
                 menuItems.length > 0 ? 
                 menuItems.map((item, index) => (
@@ -79,7 +68,7 @@ function Navbar({ setIsSidebarOpen, isSidebarOpen }) {
               <img src={Person} alt="Person" className="h-5" />
             </li>
             <li>
-              <Link to="/cart">
+              <Link to="/summary">
                 <img src={Cart} alt="Cart" className="h-5" />
               </Link>
             </li>
