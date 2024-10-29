@@ -10,12 +10,14 @@ import {
 import { Button, Ratings, SecondaryButton } from "../Components";
 import Modal from "../Components/UI/Modal";
 import Heart from "../assets/heart.svg";
-import Arrow from "../assets/arrow_down.svg";
 import Loading from "../Components/UI/Loading";
 import ProductGallery from "../Components/UI/ProductGallery";
 import { useContext } from "react";
 import { CartContext } from "../Components/contexts/CartContext";
 import RandomProducts from "../Components/UI/RandomProducts";
+import Dropdown from "../Components/UI/Dropdown";
+
+const qtyOptions = [1, 2, 3, 4, 5];
 
 // Define the custom size order
 const sizeOrder = ["S", "M", "L", "XL"];
@@ -32,14 +34,6 @@ const formatPrice = (value) => {
     .toFixed(2)
     .replace(/\d(?=(\d{3})+\.)/g, "$&,");
 };
-
-const quantityOptions = [
-  { name: "1", value: 1 },
-  { name: "2", value: 2 },
-  { name: "3", value: 3 },
-  { name: "4", value: 4 },
-  { name: "5", value: 5 },
-];
 
 const PriceDisplay = ({
   price,
@@ -94,7 +88,7 @@ function ProductDetail() {
   const [productColors, setProductColors] = useState([]);
   const [selectedColor, setSelectedColor] = useState(null);
   const [quantity, setQuantity] = useState(0);
-  const [isOpenQtyOptions, setIsOpenQtyOptions] = useState(false);
+  const [quantityOptions, setQuantityOptions] = useState(qtyOptions);
   const [isOutOfStock, setIsOutOfStock] = useState(false);
   const [isOpenAddedToCartModal, setIsOpenAddedToCartModal] = useState(false);
 
@@ -128,6 +122,12 @@ function ProductDetail() {
   }, [product]);
 
   useEffect(() => {
+    if (isOutOfStock) {
+      setQuantity("Out of Stock");
+    }
+  }, [isOutOfStock]);
+
+  useEffect(() => {
     const groupedValiant = product?.variants.reduce((acc, item) => {
       if (!acc[item.color]) {
         acc[item.color] = {
@@ -141,6 +141,16 @@ function ProductDetail() {
 
     setGroupedValiantByColor(groupedValiant);
   }, [selectedColor]);
+
+  useEffect(() => {
+    const remains = selectedProduct?.remains;
+    if (remains >= 5) {
+      setQuantityOptions(qtyOptions);
+    } else {
+      setQuantityOptions(qtyOptions.slice(0, remains));
+    }
+    setQuantity(1);
+  }, [selectedProduct]);
 
   const openAddedToCartModal = () => {
     setIsOpenAddedToCartModal(true);
@@ -270,9 +280,6 @@ function ProductDetail() {
                       customClassName={`flex-1 max-w-[107px]`}
                       onClick={() => {
                         setSelectedProduct(variant);
-                        if (quantity === 0) {
-                          setQuantity(1);
-                        }
                       }}
                       disabled={variant.remains === 0 || isOutOfStock}
                       active={selectedProduct?.size === variant?.size}
@@ -282,50 +289,17 @@ function ProductDetail() {
 
               {/* Quantity */}
               <Options sectionName="Qty.">
-                <div className="w-1/4 pr-2 relative">
-                  <SecondaryButton
-                    text={isOutOfStock ? "Out of Stock" : quantity}
-                    icon={Arrow}
-                    onClick={() => setIsOpenQtyOptions(!isOpenQtyOptions)}
-                    customClassName="w-full"
-                    customStyle={{
-                      justifyContent: "space-between",
-                      paddingRight: "20px",
-                    }}
-                    customIconStyle={{ width: "14px" }}
-                    disabled={
-                      !selectedProduct ||
-                      selectedProduct?.remains === 0 ||
-                      isOutOfStock
-                    }
-                  />
-
-                  {/* Quantity options */}
-                  <div
-                    className={`absolute w-full top-[100%] right-1 grid whitespace-nowrap mt-1 border border-grey-300 bg-white z-10 ${
-                      isOpenQtyOptions ? "" : "hidden"
-                    }`}
-                  >
-                    {quantityOptions.map((option) => {
-                      return (
-                        selectedProduct?.remains >= option.value && (
-                          <button
-                            key={`qty-option-${option.value}`}
-                            className={`w-full flex justify-start items-center gap-x-4 px-6 py-2 hover:bg-[#F2F2F2] ${
-                              quantity === option.value ? "bg-limeGreen" : ""
-                            }`}
-                            onClick={() => {
-                              setQuantity(option.value);
-                              setIsOpenQtyOptions(false);
-                            }}
-                          >
-                            <span className="text-sm">{option.name}</span>
-                          </button>
-                        )
-                      );
-                    })}
-                  </div>
-                </div>
+                <Dropdown
+                  width={isOutOfStock ? "30%" : "25%"}
+                  options={quantityOptions}
+                  disabled={
+                    !selectedProduct ||
+                    selectedProduct?.remains === 0 ||
+                    isOutOfStock
+                  }
+                  selectedItem={quantity}
+                  setSelectedItem={(e) => setQuantity(e)}
+                />
                 {selectedProduct?.remains <= 3 && (
                   <span className="text-danger">
                     Only {selectedProduct?.remains} left!
