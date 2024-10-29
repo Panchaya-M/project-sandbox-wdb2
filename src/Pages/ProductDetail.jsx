@@ -87,13 +87,14 @@ function ProductDetail() {
   const [groupedValiantByColor, setGroupedValiantByColor] = useState(null);
   const [productColors, setProductColors] = useState([]);
   const [selectedColor, setSelectedColor] = useState(null);
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const [quantityOptions, setQuantityOptions] = useState(qtyOptions);
   const [isOutOfStock, setIsOutOfStock] = useState(false);
   const [isOpenAddedToCartModal, setIsOpenAddedToCartModal] = useState(false);
 
   useEffect(() => {
     setProduct(null);
+    setSelectedProduct(null);
     _getProductDetail();
   }, [permalink]);
 
