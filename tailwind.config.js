@@ -6,6 +6,21 @@ export default {
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],
       },
+      container: {
+        padding: "16px",
+        screens: {
+          // sm: "1500px",
+          // md: "1500px",
+          lg: "1192px",
+          xl: "1600px",
+        },
+      },
+      containerNoPadding: {
+        screens: {
+          lg: "1192px",
+          xl: "1600px",
+        },
+      },
       colors: {
         limeGreen: {
           50: "#FBFFE7",
@@ -111,6 +126,7 @@ export default {
         xl: "1280px",
         xxl: "1440px",
         "3xl": "1920px",
+        "4xl": "2560px",
       },
     },
   },

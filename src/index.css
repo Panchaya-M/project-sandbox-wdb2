@@ -13,3 +13,65 @@ body {
 .btn {
   @apply px-2.5 py-[7px] text-bodyText flex flex-row justify-center items-center;
 }
+
+.btn-primary {
+  @apply text-white bg-black-900 hover:text-black-900 hover:bg-limeGreen-700 disabled:text-black-500 disabled:bg-black-300;
+}
+
+.btn-primary-active {
+  @apply text-limeGreen-900 bg-black-900;
+}
+
+.btn-secondary {
+  @apply text-black-900 bg-white border-2 border-black-300 hover:border-limeGreen-700 disabled:text-black-500 disabled:bg-black-100 disabled:border-black-300;
+}
+
+.btn-secondary-active {
+  @apply border-limeGreen-900;
+}
+
+.btn-third {
+  @apply text-black-900 bg-white border border-black-300 hover:bg-black-300 hover:text-white disabled:text-black-500 disabled:bg-black-100 disabled:border-black-300;
+}
+
+.btn-third-active {
+  @apply border-black-900;
+}
+
+.percent-discount {
+  @apply px-2.5 py-2 bg-danger text-bodyText text-white;
+}
+
+.out-of-stock {
+  @apply px-2.5 py-2 bg-black-900 text-bodyText text-white;
+}
+
+.dot-loading {
+  @apply w-4 h-4 bg-limeGreen-900 rounded-full animate-bounce;
+}
+
+.swiper-slide {
+  height: auto;
+}
+
+.thumbs-swiper .swiper-slide {
+  transition: all 0.3s;
+}
+
+.thumbs-swiper .swiper-slide-thumb-active {
+  transform: scale(0.95) !important;
+  transition: all 0.3s;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  color: #000 !important;
+  background-color: #ffffff;
+  padding: 24px;
+  border-radius: 50%;
+}
+
+.swiper-button-prev:after,
+.swiper-button-next:after {
+  font-size: 16px !important;
+}

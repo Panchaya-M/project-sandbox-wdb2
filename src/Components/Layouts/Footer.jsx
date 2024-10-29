@@ -1,6 +1,12 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Button from "../UI/Button";
+import ChevronRightCircle from "../../assets/chevron-right-circle.svg";
+import SkooldioLogo from "../../assets/images/skooldio1.png";
+import webDevLogo from "../../assets/images/web-dev1.png";
+import SecondaryButton from "../UI/SecondaryButton";
+import { Link } from "react-router-dom";
+import { CategoryContext } from "../contexts/CategoryContext";
 
 const Title = ({ title }) => {
   return <h6 className="font-bold mb-4 md:mb-6">{title}</h6>;
@@ -11,40 +17,29 @@ const Paragraph = ({ text }) => {
 };
 
 function Footer() {
+  const { parentCategories } = useContext(CategoryContext);
+  const [featuredProduct, setFeaturedProduct] = useState([]);
   const [email, setEmail] = useState("");
 
-  {
-    /* List from API */
-  }
-  const featuredProduct = [
-    {
-      name: "Men",
-      link: "",
-    },
-    {
-      name: "Ladies",
-      link: "",
-    },
-    {
-      name: "Shoes",
-      link: "",
-    },
-    {
-      name: "Accessories",
-      link: "",
-    },
-  ];
+  useEffect(() => {
+    setFeaturedProduct(parentCategories);
+  }, [parentCategories]);
 
   return (
     <footer className="bg-black text-white py-6">
-      <div className="wrapper grid grid-cols-1 md:grid-cols-3 gap-14 md:gap-[38px] 3xl:gap-[45px] mb-4 md:mb-4 text-center md:text-left">
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-14 md:gap-[38px] 3xl:gap-[45px] mb-4 md:mb-4 text-center md:text-left">
         <div>
           <Title title="Featured product" />
           <ul>
             {featuredProduct.length
               ? featuredProduct.map((feature) => (
                   <li key={feature.name} className="text-subHeading mb-4">
-                    <a href={feature.link}>{feature.name}</a>
+                    <Link
+                      to={`/products/${feature.permalink}`}
+                      className="hover:underline"
+                    >
+                      {feature.name}
+                    </Link>
                   </li>
                 ))
               : null}
@@ -56,11 +51,7 @@ function Footer() {
           <Paragraph text="Sign up now and get 20% off your first purchase!" />
 
           <div className="flex justify-center md:justify-start">
-            <Button
-              text="Sign up now"
-              icon="icons/chevron-right-circle.svg"
-              className="bg-white text-black"
-            />
+            <SecondaryButton text="Sign up now" icon={ChevronRightCircle} />
           </div>
         </div>
 
@@ -86,7 +77,7 @@ function Footer() {
               <Button
                 type="submit"
                 text="Subscribe"
-                className="bg-limeGreen-700 text-black"
+                customStyle={{ color: "#222222", backgroundColor: "#DEF81C" }}
               />
             </div>
           </form>
@@ -101,7 +92,7 @@ function Footer() {
           <div>
             <img
               className="h-[18px] w-auto"
-              src="images/skooldio1.png"
+              src={SkooldioLogo}
               alt="description of image"
             />
           </div>
@@ -109,7 +100,7 @@ function Footer() {
           <div>
             <img
               className="h-[18px] w-auto"
-              src="images/web-dev1.png"
+              src={webDevLogo}
               alt="description of image"
             />
           </div>
