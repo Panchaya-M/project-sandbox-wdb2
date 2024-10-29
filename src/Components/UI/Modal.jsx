@@ -4,7 +4,7 @@ import Close from "../../assets/close.svg";
 function Modal({ header = "", children, footer, closeModal }) {
   return (
     <div
-      className="relative z-10"
+      className="relative z-[1000]"
       aria-labelledby="modal-title"
       role="dialog"
       aria-modal="true"
