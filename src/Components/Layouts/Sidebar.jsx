@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import ArrowRight from "../../assets/arrow_right.svg";
 import ArrowLeft from "../../assets/arrow_left.svg";
 import {getAllCategory} from '../../api';
 import {Link} from 'react-router-dom';
+import { CategoryContext } from "../contexts/CategoryContext";
 
 
 const fixedMenu = [
@@ -11,7 +12,7 @@ const fixedMenu = [
 
 
 function Sidebar({ isOpen, setIsOpen }) {
-
+  const { allCategories } = useContext(CategoryContext);
   const cachedItemsRef = useRef([]);
   const [menuItems, setMenuItems] = useState([]);
   const [selectedMenu, setSelectedMenu] = useState(null);
@@ -43,8 +44,6 @@ function Sidebar({ isOpen, setIsOpen }) {
 
     let _menu = {}
 
-    console.log('>> fetchedCategories', fetchedCategories)
-
     fetchedCategories.forEach((item) => {
       // If the item is a parent
       if (item.parentId === null) {
@@ -63,8 +62,6 @@ function Sidebar({ isOpen, setIsOpen }) {
         }
         // Add the item to the parent's children
         _menu[item.parentId].children.push({...item, permalink: `/products/${_getCategoryDetail(item.parentId).permalink}/${item.permalink}`,})
-        console.log('>> item', item)
-        console.log('>>> _menu[item.parentId]', _menu[item.parentId])
       }
     })
 
@@ -73,10 +70,8 @@ function Sidebar({ isOpen, setIsOpen }) {
     cachedItemsRef.current = _menuItems
   }
 
-  async function _getAllCategory() {
-    const categories = await getAllCategory()
-
-    setFetchedCategories(categories)
+  function _getAllCategory() {
+    setFetchedCategories(allCategories)
     setIsCategoryFetched(true)
   }
 
