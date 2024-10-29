@@ -8,6 +8,10 @@ import CartSummary, {
   CartSummaryEmpty,
 } from "../Components/UI/CartSummary.jsx";
 import RandomProducts from "../Components/UI/RandomProducts.jsx";
+import { CartContext } from "../Components/contexts/CartContext.jsx";
+import { useEffect, useContext, useState } from "react";
+import { getCartById, getProductDetail } from "../api.js";
+import CartSkeleton from "../Components/UI/CartSkeleton.jsx";
 
 const VariantSection = ({ children, isEmpty }) => {
   return (
@@ -53,6 +57,80 @@ const cartItems = [
 
 export default function SummaryPage() {
   const isEmpty = false;
+  const { cartId } = useContext(CartContext);
+  const [mappedProducts, setMappedProducts] = useState([]); // State to store the fetched product data
+  const [isLoading, setIsLoading] = useState(true);
+
+  const pojorOnclick = async () => {
+    setIsLoading(true);
+    try {
+      const cart = await getCartById(cartId);
+      if (cart && Array.isArray(cart.items)) {
+        const productPromises = cart.items.map((item) =>
+          getProductDetail(item.productPermalink).then((productDetail) => {
+            const defaultQuantity = item.quantity;
+            const defaultSkuCode = item.skuCode;
+
+            const matchingSku = productDetail.data.variants.find(
+              (sku) => sku.skuCode === defaultSkuCode
+            );
+            console.log("ideee", productDetail.data.id);
+            return {
+              id: productDetail.data.id,
+              name: productDetail.data.name,
+              price: productDetail.data.price,
+              image: productDetail.data.imageUrls[0],
+              colors: [
+                ...new Set(
+                  productDetail.data.variants.map((variant) => variant.color)
+                ),
+              ],
+              sizes: [
+                ...new Set(
+                  productDetail.data.variants.map((variant) => variant.size)
+                ),
+              ],
+              quantities: [1, 2, 3, 4, 5],
+              defaultColor: matchingSku ? matchingSku.color : null,
+              defaultSize: matchingSku ? matchingSku.size : null,
+              defaultQuantity: defaultQuantity,
+              selectedColor: matchingSku ? matchingSku.color : null,
+              selectedSize: matchingSku ? matchingSku.size : null,
+              selectedQuantity: defaultQuantity,
+            };
+          })
+        );
+
+        setMappedProducts(await Promise.all(productPromises));
+        console.log("mappedProducts api", mappedProducts);
+      } else {
+        setMappedProducts([]);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // useEffect to run pojorOnclick on the first render
+  useEffect(() => {
+    pojorOnclick();
+  }, []);
+
+  const handleUpdate = (id, field, value) => {
+    console.log(id, field, value);
+
+    setMappedProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product.id === id ? { ...product, [field]: value } : product
+      )
+    );
+    console.log("mappedProducts after ", mappedProducts);
+  };
+
+  if (isLoading) {
+    return <CartSkeleton />;
+  }
+
   return (
     <>
       <div className="bg-black-50 pb-24">
@@ -60,38 +138,35 @@ export default function SummaryPage() {
           <h1 className="text-h5Bold py-[41px] px-6 text-left">My cart</h1>
           <div className="flex flex-col md:flex-row  gap-8 ">
             <VariantSection>
-              {isEmpty ? (
+              {mappedProducts.length === 0 ? (
                 <CartEmpty />
               ) : (
                 <div className="grid grid-cols-1 divide-y px-6">
-                  {/* <CartItem
-                    image="https://firebasestorage.googleapis.com/v0/b/wdb-storefront-project-api.appspot.com/o/products%2FdBt7jOQ9qnKvs8aWrxb5%2F_images%2FtrWAP3Q0eBJTUjhmP683-Gemini%20Generated%20(8).jpeg?alt=media&token=cf7b47de-a656-4608-98a7-96a6b0cc7a2c"
-                    name="Reyon Long Sleeve Shirt"
-                    colors={["Blue", "Red", "Green"]}
-                    sizes={["S", "M", "L", "XL"]}
-                    defaultColor="Blue"
-                    defaultSize="M"
-                    defaultQuantity={2}
-                    price={2000.0}
-                  />
-                  <CartItem
-                    image="https://firebasestorage.googleapis.com/v0/b/wdb-storefront-project-api.appspot.com/o/products%2FdBt7jOQ9qnKvs8aWrxb5%2F_images%2FtrWAP3Q0eBJTUjhmP683-Gemini%20Generated%20(8).jpeg?alt=media&token=cf7b47de-a656-4608-98a7-96a6b0cc7a2c"
-                    name="Flexi Move Sneaker"
-                    colors={["Trio", "Black", "White"]}
-                    sizes={["38", "39", "40", "41", "42"]}
-                    defaultColor="Trio"
-                    defaultSize="40"
-                    defaultQuantity={1}
-                    price={17000.0}
-                  /> */}
-                  {cartItems.map((item) => (
-                    <CartItem key={item.id} item={item} />
+                  {mappedProducts.map((item) => (
+                    <CartItem
+                      key={item.id}
+                      item={item}
+                      onColorChange={(color) =>
+                        handleUpdate(item.id, "selectedColor", color)
+                      }
+                      onSizeChange={(size) =>
+                        handleUpdate(item.id, "selectedSize", size)
+                      }
+                      onQuantityChange={(quantity) => {
+                        if (quantity === undefined) quantity = 0;
+                        handleUpdate(item.id, "selectedQuantity", quantity);
+                      }}
+                    />
                   ))}
                 </div>
               )}
             </VariantSection>
 
-            {isEmpty ? <CartSummaryEmpty /> : <CartSummary items={cartItems} />}
+            {mappedProducts.length === 0 ? (
+              <CartSummaryEmpty />
+            ) : (
+              <CartSummary items={mappedProducts} />
+            )}
           </div>
 
           {/* Featured Products */}
