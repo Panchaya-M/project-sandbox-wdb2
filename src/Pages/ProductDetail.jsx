@@ -23,9 +23,16 @@ const qtyOptions = [1, 2, 3, 4, 5];
 const sizeOrder = ["S", "M", "L", "XL"];
 
 // Sort the variants by size using the custom order
-const sortedVariantBySize = (variants) => {
+const sortedVariantBySize = (variants = []) => {
+
+  if (sizeOrder.includes(variants[0]?.size)) {
+    return variants?.sort(
+      (a, b) => sizeOrder.indexOf(a.size) - sizeOrder.indexOf(b.size)
+    );
+  }
+
   return variants?.sort(
-    (a, b) => sizeOrder.indexOf(a.size) - sizeOrder.indexOf(b.size)
+    (a, b) => a.size - b.size
   );
 };
 
