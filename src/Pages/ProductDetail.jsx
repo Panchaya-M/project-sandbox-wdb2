@@ -124,7 +124,7 @@ function ProductDetail() {
     setProductColors(colors);
     setSelectedColor(colors[0].color);
 
-    if (product.variants.length === 1 && product.variants[0]?.size === "") {
+    if (product.variants.length === 1 && !product.variants[0]?.size) {
       setProductNoSize(true);
       setSelectedProduct(product.variants[0]);
     }
