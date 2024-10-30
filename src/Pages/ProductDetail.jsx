@@ -190,6 +190,8 @@ function ProductDetail() {
   }
 
   async function _addProductToCart() {
+    console.log("in api >> ", cartId);
+
     try {
       const params = {
         items: [

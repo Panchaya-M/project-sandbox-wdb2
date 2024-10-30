@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 import Button, { ButtonCustom } from "../UI/Button.jsx";
 import CardEmpty from "../../assets/images/empty_cart.png";
@@ -175,10 +176,12 @@ export function CartEmpty() {
           </p>
         </div>
         <div>
-          <Button
-            text="Continue shopping"
-            customClassName="transition-colors duration-200"
-          ></Button>
+          <Link to="/products" className="no-underline hover:no-underline">
+            <Button
+              text="Continue shopping"
+              customClassName="transition-colors duration-200"
+            ></Button>
+          </Link>
         </div>
       </div>
     </>

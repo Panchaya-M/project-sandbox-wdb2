@@ -57,7 +57,7 @@ const cartItems = [
 
 export default function SummaryPage() {
   const isEmpty = false;
-  const { cartId } = useContext(CartContext);
+  const { cartId, setMappedItem } = useContext(CartContext);
   const [mappedProducts, setMappedProducts] = useState([]); // State to store the fetched product data
   const [isLoading, setIsLoading] = useState(true);
 
@@ -101,7 +101,10 @@ export default function SummaryPage() {
           })
         );
 
-        setMappedProducts(await Promise.all(productPromises));
+        const mappedProductsApi = await Promise.all(productPromises);
+
+        setMappedProducts(mappedProductsApi);
+        setMappedItem(mappedProductsApi);
         console.log("mappedProducts api", mappedProducts);
       } else {
         setMappedProducts([]);
