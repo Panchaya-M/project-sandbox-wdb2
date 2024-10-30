@@ -5,38 +5,7 @@ import { Link } from "react-router-dom";
 import Button, { ButtonCustom } from "../UI/Button.jsx";
 import CardEmpty from "../../assets/images/empty_cart.png";
 import Delete from "../../assets/delete.svg";
-import Arrow from "../../assets/arrow_down.svg";
-
-function SelectBox({ type, name, items, defaultValue, onChange }) {
-  console.log("items", items);
-  console.log("default", defaultValue);
-  let isDisabled = false;
-  if (defaultValue === undefined) isDisabled = true;
-  if (items === undefined) items = [];
-
-  return (
-    <div className="relative">
-      <select
-        id={`${type}-${name}`}
-        defaultValue={defaultValue}
-        disabled={isDisabled}
-        onChange={onChange}
-        className={`block appearance-none w-full h-[54px]  border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none  focus:border-gray-500 ${
-          isDisabled ? "bg-gray-200" : "bg-white focus:bg-white"
-        }`}
-      >
-        {items.map((item, index) => (
-          <option key={index} value={item}>
-            {item}
-          </option>
-        ))}
-      </select>
-      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-        <img src={Arrow} className="h-4 w-4" />
-      </div>
-    </div>
-  );
-}
+import Dropdown from "./Dropdown.jsx";
 
 const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
   const [selectedColor, setSelectedColor] = useState(item.defaultColor);
@@ -101,12 +70,12 @@ const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
                 >
                   Color
                 </label>
-                <SelectBox
-                  type="color"
-                  name={item.name}
-                  items={item.colors}
-                  defaultValue={item.defaultColor}
-                  onChange={(e) => onColorChange(e.target.value)}
+                <Dropdown
+                  width="100%"
+                  options={item.colors}
+                  disabled={item.defaultColor === undefined}
+                  selectedItem={item.defaultColor}
+                  setSelectedItem={(e) => onColorChange(e)}
                 />
               </div>
 
@@ -117,12 +86,12 @@ const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
                 >
                   Size
                 </label>
-                <SelectBox
-                  type="size"
-                  name={item.name}
-                  items={item.sizes}
-                  defaultValue={item.defaultSize}
-                  onChange={(e) => onSizeChange(e.target.value)}
+                <Dropdown
+                  width="100%"
+                  options={item.sizes}
+                  disabled={item.defaultSize === undefined}
+                  selectedItem={item.defaultSize}
+                  setSelectedItem={(e) => onSizeChange(e)}
                 />
               </div>
 
@@ -133,6 +102,13 @@ const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
                 >
                   Quantity
                 </label>
+                <Dropdown
+                  width="100%"
+                  options={item.quantities}
+                  disabled={item.defaultQuantity === undefined}
+                  selectedItem={item.defaultQuantity}
+                  setSelectedItem={(e) => onQuantityChange(Number(e))}
+                />
                 <SelectBox
                   type="quantity"
                   name={item.name}
