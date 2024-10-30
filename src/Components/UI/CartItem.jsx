@@ -7,6 +7,20 @@ import CardEmpty from "../../assets/images/empty_cart.png";
 import Delete from "../../assets/delete.svg";
 import Dropdown from "./Dropdown.jsx";
 
+// Define the custom size order
+const sizeOrder = ["S", "M", "L", "XL"];
+
+// Sort the variants by size using the custom order
+const sortedVariantBySize = (variants = []) => {
+  if (sizeOrder.includes(variants[0])) {
+    return variants?.sort(
+      (a, b) => sizeOrder.indexOf(a) - sizeOrder.indexOf(b)
+    );
+  }
+
+  return variants?.sort((a, b) => a - b);
+};
+
 const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
   const [selectedColor, setSelectedColor] = useState(item.defaultColor);
   const [selectedSize, setSelectedSize] = useState(item.defaultSize);
@@ -73,7 +87,7 @@ const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
                 <Dropdown
                   width="100%"
                   options={item.colors}
-                  disabled={item.defaultColor === undefined}
+                  disabled={!item.defaultColor}
                   selectedItem={item.defaultColor}
                   setSelectedItem={(e) => onColorChange(e)}
                 />
@@ -88,8 +102,8 @@ const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
                 </label>
                 <Dropdown
                   width="100%"
-                  options={item.sizes}
-                  disabled={item.defaultSize === undefined}
+                  options={sortedVariantBySize(item.sizes)}
+                  disabled={!item.defaultSize}
                   selectedItem={item.defaultSize}
                   setSelectedItem={(e) => onSizeChange(e)}
                 />
@@ -105,7 +119,7 @@ const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
                 <Dropdown
                   width="100%"
                   options={item.quantities}
-                  disabled={item.defaultQuantity === undefined}
+                  disabled={!item.defaultQuantity}
                   selectedItem={item.defaultQuantity}
                   setSelectedItem={(e) => onQuantityChange(Number(e))}
                 />
