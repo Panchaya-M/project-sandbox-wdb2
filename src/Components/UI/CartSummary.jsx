@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import PropTypes from "prop-types";
 import Button, { ButtonCustom } from "../UI/Button.jsx";
 import Bill from "../../assets/bill.svg";
 import { Link } from "react-router-dom";
-import ConfirmationModal from "./ConfirmationModal.jsx";
+import ConfirmationModal, { ThankyouModal } from "./ConfirmationModal.jsx";
+import { CartContext } from "../contexts/CartContext.jsx";
 
 const CartSummary = ({ items }) => {
+  const { setCartId, setMappedItem, setInvisible } = useContext(CartContext);
   const [checkout, setCheckout] = useState(false);
+  const [ty, setTy] = useState(false);
   console.log("checkout", checkout);
 
   const subtotal = items.reduce(
@@ -21,6 +24,25 @@ const CartSummary = ({ items }) => {
 
   const closeCheckoutModal = () => {
     setCheckout(false);
+    setTy(false);
+  };
+
+  const openTyModal = () => {
+    setCheckout(false);
+    setTy(true);
+  };
+
+  const closeTyModal = () => {
+    setTy(false);
+  };
+
+  const redirecttohomepage = () => {
+    // setTy(false);
+    console.log("onconfiem ");
+    localStorage.clear();
+    setCartId(null);
+    setMappedItem([]);
+    setInvisible(true);
   };
 
   return (
@@ -91,7 +113,27 @@ const CartSummary = ({ items }) => {
         </div>
 
         {checkout && (
-          <ConfirmationModal isOpen={true} onClose={closeCheckoutModal} />
+          <ConfirmationModal
+            title="Confirm Action"
+            message="Are you sure you want to checkout?"
+            confirmText="Yes"
+            cancelText="Cancel"
+            isOpen={true}
+            onConfirm={openTyModal}
+            onClose={closeCheckoutModal}
+          />
+        )}
+
+        {ty && (
+          <ThankyouModal
+            title="Thank you for your purchase!"
+            message={`Your order is confirmed.\n We’re excited to get your items to you soon!\nYou can track your order status in your account.`}
+            confirmText="Go to Homepage"
+            cancelText="Stay in this page"
+            isOpen={true}
+            onClose={closeTyModal}
+            onConfirm={redirecttohomepage}
+          />
         )}
 
         <div className="mt-4 pt-4 border-t">
@@ -164,10 +206,12 @@ export function CartSummaryEmpty() {
             text="Check out"
             customClassName="transition-colors duration-200"
           ></Button>
-          <ButtonCustom
-            text="Continue shopping"
-            customClassName="transition-colors duration-200"
-          ></ButtonCustom>
+          <Link to="/products" className="no-underline hover:no-underline">
+            <ButtonCustom
+              text="Continue shopping"
+              customClassName="transition-colors duration-200 w-full"
+            ></ButtonCustom>
+          </Link>
         </div>
       </div>
     </div>

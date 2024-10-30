@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 
 // import BasketEmpty from "../../assets/basket-empty.svg";
@@ -7,7 +7,11 @@ import Heart from "../../assets/heart_w.svg";
 import Person from "../../assets/person_w.svg";
 import Cart from "../../assets/cart_w.svg";
 import Hamburger from "../../assets/hamburger.svg";
-import {getParentCategory} from '../../api';
+import { getParentCategory } from "../../api";
+import Reddot from "../../assets/images/red-dot.png";
+import Badge from "@mui/material/Badge";
+import { red } from "@mui/material/colors";
+import { CartContext } from "../contexts/CartContext.jsx";
 
 function getLink(category) {
   return `/products/${category}`;
@@ -20,11 +24,19 @@ const FixedMenuItems = [
 ];
 
 function Navbar({ setIsSidebarOpen, isSidebarOpen }) {
+  const { mappedItem, invisible } = useContext(CartContext);
+  // const [invisible, setInvisible] = useState(false);
   const [menuItems, setMenuItems] = useState([]);
 
   useEffect(() => {
-    getMenuItems()
-  }, [])
+    getMenuItems();
+  }, []);
+
+  // useEffect(() => {
+  //   console.log(">>>>>>>>>>>>>>>> navbar", mappedItem, invisible);
+
+  //   if (mappedItem.length > 0) setInvisible(true);
+  // }, [mappedItem]);
 
   async function getMenuItems() {
     const menuItems = await getParentCategory();
@@ -41,26 +53,30 @@ function Navbar({ setIsSidebarOpen, isSidebarOpen }) {
           {/* Logo Container */}
           <div className="flex gap-x-4">
             {/* Hamburger Icon */}
-            <button className="" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+            <button
+              className=""
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            >
               <img className="flex sx:hidden" src={Hamburger} alt="Hamburger" />
             </button>
             {/* Logo Image */}
-            <Link to="/"><img src="/images/nav-logo-white.png" alt="Logo" /></Link>
+            <Link to="/">
+              <img src="/images/nav-logo-white.png" alt="Logo" />
+            </Link>
           </div>
 
           {/* Menu Container */}
           <div className="">
             <ul className="hidden sx:flex gap-x-6">
-              {
-                menuItems.length > 0 ? 
+              {menuItems.length > 0 ? (
                 menuItems.map((item, index) => (
                   <li key={`nav-item-${index}`}>
                     <Link to={getLink(item.permalink)}>{item.name}</Link>
                   </li>
-                )) : (
-                  <p>Loading items...</p>
-                ) 
-              }
+                ))
+              ) : (
+                <p>Loading items...</p>
+              )}
             </ul>
           </div>
         </div>
@@ -79,8 +95,18 @@ function Navbar({ setIsSidebarOpen, isSidebarOpen }) {
               <img src={Person} alt="Person" className="h-5" />
             </li>
             <li>
-              <Link to="/cart">
-                <img src={Cart} alt="Cart" className="h-5" />
+              <Link to="/summary">
+                <Badge
+                  sx={{
+                    "& .MuiBadge-badge": {
+                      backgroundColor: "red",
+                    },
+                  }}
+                  variant="dot"
+                  invisible={invisible}
+                >
+                  <img src={Cart} alt="Cart" className="h-5" />
+                </Badge>
               </Link>
             </li>
           </ul>
@@ -89,5 +115,16 @@ function Navbar({ setIsSidebarOpen, isSidebarOpen }) {
     </nav>
   );
 }
+
+// <div>
+//         <Badge color="secondary" variant="dot" invisible={invisible}>
+//           <MailIcon />
+//         </Badge>
+//         <FormControlLabel
+//           sx={{ color: 'text.primary' }}
+//           control={<Switch checked={!invisible} onChange={handleBadgeVisibility} />}
+//           label="Show Badge"
+//         />
+//       </div>
 
 export default Navbar;
