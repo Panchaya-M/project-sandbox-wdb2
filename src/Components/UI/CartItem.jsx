@@ -29,22 +29,25 @@ const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
   );
 
   console.log(">>>>  ", item);
-  const handleQuantityChange = (e) => {
-    const quantity = Number(e.target.value);
+  const handleQuantityChange = (quantity) => {
     setSelectedQuantity(quantity);
-    updateProduct(item.id, { defaultQuantity: quantity });
+    onQuantityChange(quantity);
+
+    // updateProduct(item.id, { defaultQuantity: quantity });
   };
 
-  const handleColorChange = (e) => {
-    const color = e.target.value;
+  const handleColorChange = (color) => {
     setSelectedColor(color);
-    updateProduct(item.id, { defaultColor: color });
+    onColorChange(color);
+
+    // updateProduct(item.id, { defaultColor: color });
   };
 
-  const handleSizeChange = (e) => {
-    const size = e.target.value;
+  const handleSizeChange = (size) => {
     setSelectedSize(size);
-    updateProduct(item.id, { defaultSize: size });
+    onSizeChange(size);
+
+    // updateProduct(item.id, { defaultSize: size });
   };
 
   const handleRemove = () => {
@@ -88,8 +91,8 @@ const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
                   width="100%"
                   options={item.colors}
                   disabled={!item.defaultColor}
-                  selectedItem={item.defaultColor}
-                  setSelectedItem={(e) => onColorChange(e)}
+                  selectedItem={selectedColor}
+                  setSelectedItem={(e) => handleColorChange(e)}
                 />
               </div>
 
@@ -104,8 +107,8 @@ const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
                   width="100%"
                   options={sortedVariantBySize(item.sizes)}
                   disabled={!item.defaultSize}
-                  selectedItem={item.defaultSize}
-                  setSelectedItem={(e) => onSizeChange(e)}
+                  selectedItem={selectedSize}
+                  setSelectedItem={(e) => handleSizeChange(e)}
                 />
               </div>
 
@@ -120,8 +123,8 @@ const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
                   width="100%"
                   options={item.quantities}
                   disabled={!item.defaultQuantity}
-                  selectedItem={item.defaultQuantity}
-                  setSelectedItem={(e) => onQuantityChange(Number(e))}
+                  selectedItem={selectedQuantity}
+                  setSelectedItem={(e) => handleQuantityChange(Number(e))}
                 />
               </div>
             </div>
