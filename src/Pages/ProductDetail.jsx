@@ -24,16 +24,13 @@ const sizeOrder = ["S", "M", "L", "XL"];
 
 // Sort the variants by size using the custom order
 const sortedVariantBySize = (variants = []) => {
-
   if (sizeOrder.includes(variants[0]?.size)) {
     return variants?.sort(
       (a, b) => sizeOrder.indexOf(a.size) - sizeOrder.indexOf(b.size)
     );
   }
 
-  return variants?.sort(
-    (a, b) => a.size - b.size
-  );
+  return variants?.sort((a, b) => a.size - b.size);
 };
 
 const formatPrice = (value) => {
@@ -91,6 +88,7 @@ function ProductDetail() {
 
   const [product, setProduct] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [productNoSize, setProductNoSize] = useState(false);
   const [groupedValiantByColor, setGroupedValiantByColor] = useState(null);
   const [productColors, setProductColors] = useState([]);
   const [selectedColor, setSelectedColor] = useState(null);
@@ -102,6 +100,7 @@ function ProductDetail() {
   useEffect(() => {
     setProduct(null);
     setSelectedProduct(null);
+    setProductNoSize(false);
     _getProductDetail();
   }, [permalink]);
 
@@ -124,6 +123,11 @@ function ProductDetail() {
 
     setProductColors(colors);
     setSelectedColor(colors[0].color);
+
+    if (product.variants.length === 1 && product.variants[0]?.size === "") {
+      setProductNoSize(true);
+      setSelectedProduct(product.variants[0]);
+    }
 
     const checkRemains = product?.variants.every((item) => item.remains === 0);
     setIsOutOfStock(checkRemains);
@@ -277,23 +281,25 @@ function ProductDetail() {
               </Options>
 
               {/* sizes */}
-              <Options sectionName="Size">
-                {groupedValiantByColor &&
-                  sortedVariantBySize(
-                    groupedValiantByColor[selectedColor]?.items
-                  )?.map((variant, index) => (
-                    <SecondaryButton
-                      key={index}
-                      text={variant.size || "Free Size"}
-                      customClassName={`flex-1 max-w-[107px]`}
-                      onClick={() => {
-                        setSelectedProduct(variant);
-                      }}
-                      disabled={variant.remains === 0 || isOutOfStock}
-                      active={selectedProduct?.size === variant?.size}
-                    />
-                  ))}
-              </Options>
+              {!productNoSize && (
+                <Options sectionName="Size">
+                  {groupedValiantByColor &&
+                    sortedVariantBySize(
+                      groupedValiantByColor[selectedColor]?.items
+                    )?.map((variant, index) => (
+                      <SecondaryButton
+                        key={index}
+                        text={variant.size || "Free Size"}
+                        customClassName={`flex-1 max-w-[107px]`}
+                        onClick={() => {
+                          setSelectedProduct(variant);
+                        }}
+                        disabled={variant.remains === 0 || isOutOfStock}
+                        active={selectedProduct?.size === variant?.size}
+                      />
+                    ))}
+                </Options>
+              )}
 
               {/* Quantity */}
               <Options sectionName="Qty.">
