@@ -42,15 +42,16 @@ const ProductGallery = ({
             </SwiperSlide>
           ))}
         </Swiper>
-        {isOutOfStock && (
+        {isOutOfStock ? (
           <div className="absolute top-6 right-0 out-of-stock z-[99]">
             Out of stock
           </div>
-        )}
-        {isPromotion && (
-          <div className="absolute top-6 right-0 percent-discount z-[99]">
-            - {percentDiscount}%
-          </div>
+        ) : (
+          isPromotion && (
+            <div className="absolute top-6 right-0 percent-discount z-[99]">
+              - {percentDiscount}%
+            </div>
+          )
         )}
       </div>
 

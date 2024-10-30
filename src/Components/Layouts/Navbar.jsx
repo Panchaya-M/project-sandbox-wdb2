@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 // import BasketEmpty from "../../assets/basket-empty.svg";
@@ -8,41 +8,32 @@ import Person from "../../assets/person_w.svg";
 import Cart from "../../assets/cart_w.svg";
 import Hamburger from "../../assets/hamburger.svg";
 import { getParentCategory } from "../../api";
-import Reddot from "../../assets/images/red-dot.png";
 import Badge from "@mui/material/Badge";
-import { red } from "@mui/material/colors";
 import { CartContext } from "../contexts/CartContext.jsx";
+import { CategoryContext } from "../contexts/CategoryContext";
 
 function getLink(category) {
   return `/products/${category}`;
 }
 
-const FixedMenuItems = [
-  { name: "Men", link: "men" },
-  { name: "Women", link: "women" },
-  { name: "Collections", link: "collections" },
-];
-
 function Navbar({ setIsSidebarOpen, isSidebarOpen }) {
   const { mappedItem, invisible } = useContext(CartContext);
-  // const [invisible, setInvisible] = useState(false);
-  const [menuItems, setMenuItems] = useState([]);
 
   useEffect(() => {
     getMenuItems();
   }, []);
-
-  // useEffect(() => {
-  //   console.log(">>>>>>>>>>>>>>>> navbar", mappedItem, invisible);
-
-  //   if (mappedItem.length > 0) setInvisible(true);
-  // }, [mappedItem]);
 
   async function getMenuItems() {
     const menuItems = await getParentCategory();
 
     setMenuItems(menuItems);
   }
+  const { parentCategories } = useContext(CategoryContext);
+  const [menuItems, setMenuItems] = useState([]);
+
+  useEffect(() => {
+    setMenuItems(parentCategories);
+  }, [parentCategories]);
 
   return (
     <nav className="bg-black text-white">
@@ -57,7 +48,7 @@ function Navbar({ setIsSidebarOpen, isSidebarOpen }) {
               className=""
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             >
-              <img className="flex sx:hidden" src={Hamburger} alt="Hamburger" />
+              <img className="flex md:hidden" src={Hamburger} alt="Hamburger" />
             </button>
             {/* Logo Image */}
             <Link to="/">
