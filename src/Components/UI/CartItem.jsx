@@ -109,13 +109,6 @@ const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
                   selectedItem={item.defaultQuantity}
                   setSelectedItem={(e) => onQuantityChange(Number(e))}
                 />
-                <SelectBox
-                  type="quantity"
-                  name={item.name}
-                  items={item.quantities}
-                  defaultValue={item.defaultQuantity}
-                  onChange={(e) => onQuantityChange(Number(e.target.value))}
-                />
               </div>
             </div>
 
