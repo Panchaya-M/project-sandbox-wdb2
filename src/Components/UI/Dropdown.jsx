@@ -27,7 +27,7 @@ function Dropdown({
   }, []);
 
   return (
-    <div ref={dropdownRef} className="pr-2 relative" style={{ width: width }}>
+    <div ref={dropdownRef} className="relative" style={{ width: width }}>
       <SecondaryButton
         text={selectedItem}
         icon={Arrow}
