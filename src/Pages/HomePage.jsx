@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { getAllProducts, getCollection } from "../api";
 import ProductCard from "../Components/UI/ProductCard";
 import { Button } from "../Components";
+import RandomProducts from '../Components/UI/RandomProducts';
 
 function HomePage() {
   // React Hook
@@ -83,10 +84,12 @@ function HomePage() {
 
         {/* Featured Products */}
         <div className="my-24">
-          <p className="font-bold text-[32px] text-center">Featured Products</p>
-
-          <div className="mt-16 grid grid-cols-1 md:grid-cols-4 gap-10">
-            {featuredProducts.map((product) => (
+          <div className="mt-16 gap-10">
+          <RandomProducts
+            header="Featured Products"
+            headerAlign="center"
+          />
+            {/* {featuredProducts.map((product) => (
               <ProductCard
                 key={product.id}
                 name={product.name}
@@ -98,7 +101,7 @@ function HomePage() {
                 isPromotion={product.promotionalPrice < product.price}
                 permalink={product.permalink}
               />
-            ))}
+            ))} */}
           </div>
         </div>
       </div>
