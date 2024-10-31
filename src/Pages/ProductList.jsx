@@ -469,6 +469,13 @@ const ProductListPage = () => {
               }
 
               {
+                products.length === 0 && !isLoading && (
+                  <div className="col-span-1">
+                    <p className="text-center">No products found</p>
+                  </div>
+                )
+              }
+              {
                 products.map((product) => (
                   <div className="col-span-1">
                     <ProductCard
