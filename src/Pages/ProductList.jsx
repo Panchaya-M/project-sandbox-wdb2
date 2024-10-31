@@ -267,6 +267,10 @@ const ProductListPage = () => {
     _getProductByCategory();
   }, [pageDetail]);
 
+  useEffect(() => {
+    setSelectedCollection(null)
+  }, [params.category, params.subCategory]);
+
   // Create category list
   function createCategoryList(fetchedCategories) {
     console.log('fetchedCategories', fetchedCategories);
