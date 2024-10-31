@@ -58,7 +58,7 @@ function Navbar({ setIsSidebarOpen, isSidebarOpen }) {
 
           {/* Menu Container */}
           <div className="">
-            <ul className="hidden sx:flex gap-x-6">
+            <ul className="hidden md:flex gap-x-6">
               {menuItems.length > 0 ? (
                 menuItems.map((item, index) => (
                   <li key={`nav-item-${index}`}>
