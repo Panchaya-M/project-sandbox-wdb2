@@ -267,6 +267,10 @@ const ProductListPage = () => {
     _getProductByCategory();
   }, [pageDetail]);
 
+  useEffect(() => {
+    setSelectedCollection(null)
+  }, [params.category, params.subCategory]);
+
   // Create category list
   function createCategoryList(fetchedCategories) {
     console.log('fetchedCategories', fetchedCategories);
@@ -464,6 +468,13 @@ const ProductListPage = () => {
                 )
               }
 
+              {
+                products.length === 0 && !isLoading && (
+                  <div className="col-span-1">
+                    <p className="text-center">No products found</p>
+                  </div>
+                )
+              }
               {
                 products.map((product) => (
                   <div className="col-span-1">
