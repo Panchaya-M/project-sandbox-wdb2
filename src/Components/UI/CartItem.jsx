@@ -138,31 +138,6 @@ const CartItem = ({
     updateCartItem(selectedColor, selectedSize, newQuantity);
   };
 
-  // const handleQuantityChange = (quantity) => {
-  //   setSelectedQuantity(quantity);
-  //   onQuantityChange(quantity);
-
-  //   // updateProduct(item.id, { defaultQuantity: quantity });
-  // };
-
-  // const handleColorChange = (color) => {
-  //   setSelectedColor(color);
-  //   onColorChange(color);
-
-  //   // updateProduct(item.id, { defaultColor: color });
-  // };
-
-  // const handleSizeChange = (size) => {
-  //   setSelectedSize(size);
-  //   onSizeChange(size);
-
-  //   // updateProduct(item.id, { defaultSize: size });
-  // };
-
-  // const handleRemove = () => {
-  //   console.log("Remove item:", item.id);
-  // };
-
   return (
     <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
       <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
