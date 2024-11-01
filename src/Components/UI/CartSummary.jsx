@@ -47,7 +47,7 @@ const CartSummary = ({ items }) => {
 
   return (
     // <div className="xxl:w-[616px] xxl:h-[464px] xl:w-[440px] xl:h-[464px] bg-white w-full md:w-1/3">
-    <div className="xxl:w-[616px] xl:w-[440px]  bg-white w-full md:w-1/3">
+    <div className="xxl:w-[616px] xl:w-[440px]  bg-white w-full  h-full  md:w-1/3">
       <div className="flex flex-col mx-6 my-6 space-y-10">
         {/* detail */}
         <div className="flex flex-col justify-between gap-6">
