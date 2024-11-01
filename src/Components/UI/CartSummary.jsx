@@ -129,7 +129,7 @@ const CartSummary = ({ items }) => {
             title="Thank you for your purchase!"
             message={`Your order is confirmed.\n We’re excited to get your items to you soon!\nYou can track your order status in your account.`}
             confirmText="Go to Homepage"
-            cancelText="Stay in this page"
+            cancelText=""
             isOpen={true}
             onClose={closeTyModal}
             onConfirm={redirecttohomepage}
@@ -221,7 +221,7 @@ export function CartSummaryEmpty() {
 CartSummary.propTypes = {
   items: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       price: PropTypes.number.isRequired,
       defaultQuantity: PropTypes.number.isRequired,

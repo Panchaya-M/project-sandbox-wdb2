@@ -5,54 +5,163 @@ import { Link } from "react-router-dom";
 import Button, { ButtonCustom } from "../UI/Button.jsx";
 import CardEmpty from "../../assets/images/empty_cart.png";
 import Delete from "../../assets/delete.svg";
-import Dropdown from "./Dropdown.jsx";
+import Dropdown, { DropdownCustom } from "./Dropdown.jsx";
+import Arrow from "../../assets/arrow_down.svg";
+import { updateItemInCart } from "../../api.js";
 
 // Define the custom size order
 const sizeOrder = ["S", "M", "L", "XL"];
 
-// Sort the variants by size using the custom order
-const sortedVariantBySize = (variants = []) => {
-  if (sizeOrder.includes(variants[0])) {
-    return variants?.sort(
-      (a, b) => sizeOrder.indexOf(a) - sizeOrder.indexOf(b)
-    );
-  }
+// // Sort the variants by size using the custom order
+// const sortedVariantBySize = (variants = []) => {
+//   if (sizeOrder.includes(variants[0])) {
+//     return variants?.sort(
+//       (a, b) => sizeOrder.indexOf(a) - sizeOrder.indexOf(b)
+//     );
+//   }
 
-  return variants?.sort((a, b) => a - b);
-};
+//   return variants?.sort((a, b) => a - b);
+// };
 
-const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
+function SelectBox({
+  type,
+  name,
+  items,
+  defaultValue,
+  onChange,
+  disabledOptions = [],
+}) {
+  let isDisabled = false;
+  if (defaultValue === undefined) isDisabled = true;
+  if (items === undefined) items = [];
+
+  return (
+    <div className="relative">
+      <select
+        id={`${type}-${name}`}
+        defaultValue={defaultValue}
+        disabled={isDisabled}
+        onChange={onChange}
+        className={`block appearance-none w-full h-[54px]  border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none  focus:border-gray-500 ${
+          isDisabled ? "bg-gray-200" : "bg-white focus:bg-white"
+        }`}
+      >
+        {items.map((item, index) => (
+          <option
+            key={index}
+            value={item}
+            disabled={disabledOptions.includes(item)}
+          >
+            {item}
+          </option>
+        ))}
+      </select>
+      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+        <img src={Arrow} className="h-4 w-4" />
+      </div>
+    </div>
+  );
+}
+
+const CartItem = ({
+  item,
+  onColorChange,
+  onSizeChange,
+  onRemove,
+  cartId,
+  onQuantityChange,
+}) => {
   const [selectedColor, setSelectedColor] = useState(item.defaultColor);
   const [selectedSize, setSelectedSize] = useState(item.defaultSize);
   const [selectedQuantity, setSelectedQuantity] = useState(
     item.defaultQuantity
   );
 
-  console.log(">>>>  ", item);
-  const handleQuantityChange = (quantity) => {
-    setSelectedQuantity(quantity);
-    onQuantityChange(quantity);
+  // Filter sizes for the selected color and disable those with remains = 0
+  const availableSizes = item.sizes;
+  const disabledSizes = item.variants
+    .filter(
+      (variant) => variant.color === selectedColor && variant.remains === 0
+    )
+    .map((variant) => variant.size);
 
-    // updateProduct(item.id, { defaultQuantity: quantity });
+  // Filter colors for the selected size and disable those with remains = 0
+  const availableColors = item.colors;
+  const disabledColors = item.variants
+    .filter((variant) => variant.size === selectedSize && variant.remains === 0)
+    .map((variant) => variant.color);
+
+  // Update the cart based on color, size, and quantity selection
+  const updateCartItem = async (newColor, newSize, newQuantity) => {
+    const matchingVariant = item.variants.find(
+      (variant) => variant.color === newColor && variant.size === newSize
+    );
+
+    if (matchingVariant && matchingVariant.remains > 0) {
+      const body = {
+        skuCode: matchingVariant.skuCode,
+        quantity: newQuantity,
+      };
+
+      try {
+        await updateItemInCart(cartId, item.id, body);
+        console.log("Cart updated successfully");
+      } catch (error) {
+        console.error("Error updating cart:", error);
+      }
+    } else {
+      console.warn("No stock available for this color/size combination");
+    }
   };
 
-  const handleColorChange = (color) => {
-    setSelectedColor(color);
-    onColorChange(color);
-
-    // updateProduct(item.id, { defaultColor: color });
+  const handleColorChange = (e) => {
+    const newColor = e.target.value;
+    setSelectedColor(newColor);
+    updateCartItem(newColor, selectedSize, selectedQuantity);
   };
 
-  const handleSizeChange = (size) => {
-    setSelectedSize(size);
-    onSizeChange(size);
+  const handleSizeChange = (e) => {
+    const newSize = e.target.value;
+    setSelectedSize(newSize);
 
-    // updateProduct(item.id, { defaultSize: size });
+    updateCartItem(selectedColor, newSize, selectedQuantity);
   };
 
-  const handleRemove = () => {
-    console.log("Remove item:", item.id);
+  const handleQuantityChange = (e) => {
+    console.log(">>>>>> ", e.target.value);
+
+    const newQuantity = Number(e.target.value);
+    onQuantityChange(newQuantity);
+    setSelectedQuantity(newQuantity);
+
+    // Pass the current color, size, and updated quantity to the updateCartItem function
+    updateCartItem(selectedColor, selectedSize, newQuantity);
   };
+
+  // const handleQuantityChange = (quantity) => {
+  //   setSelectedQuantity(quantity);
+  //   onQuantityChange(quantity);
+
+  //   // updateProduct(item.id, { defaultQuantity: quantity });
+  // };
+
+  // const handleColorChange = (color) => {
+  //   setSelectedColor(color);
+  //   onColorChange(color);
+
+  //   // updateProduct(item.id, { defaultColor: color });
+  // };
+
+  // const handleSizeChange = (size) => {
+  //   setSelectedSize(size);
+  //   onSizeChange(size);
+
+  //   // updateProduct(item.id, { defaultSize: size });
+  // };
+
+  // const handleRemove = () => {
+  //   console.log("Remove item:", item.id);
+  // };
 
   return (
     <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
@@ -70,7 +179,7 @@ const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
               {item.name}
             </h3>
             <button
-              onClick={handleRemove}
+              onClick={() => onRemove(item.id)}
               className="text-gray-400 hover:text-red-500 transition-colors duration-200 ml-2"
               aria-label="Remove item"
             >
@@ -87,12 +196,13 @@ const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
                 >
                   Color
                 </label>
-                <Dropdown
-                  width="100%"
-                  options={item.colors}
-                  disabled={!item.defaultColor}
-                  selectedItem={selectedColor}
-                  setSelectedItem={(e) => handleColorChange(e)}
+                <SelectBox
+                  type="color"
+                  name={item.name}
+                  items={availableColors}
+                  defaultValue={selectedColor}
+                  onChange={handleColorChange}
+                  disabledOptions={disabledColors}
                 />
               </div>
 
@@ -103,12 +213,13 @@ const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
                 >
                   Size
                 </label>
-                <Dropdown
-                  width="100%"
-                  options={sortedVariantBySize(item.sizes)}
-                  disabled={!item.defaultSize}
-                  selectedItem={selectedSize}
-                  setSelectedItem={(e) => handleSizeChange(e)}
+                <SelectBox
+                  type="size"
+                  name={item.name}
+                  items={availableSizes}
+                  defaultValue={selectedSize}
+                  onChange={handleSizeChange}
+                  disabledOptions={disabledSizes}
                 />
               </div>
 
@@ -119,12 +230,12 @@ const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
                 >
                   Quantity
                 </label>
-                <Dropdown
-                  width="100%"
-                  options={item.quantities}
-                  disabled={!item.defaultQuantity}
-                  selectedItem={selectedQuantity}
-                  setSelectedItem={(e) => handleQuantityChange(Number(e))}
+                <SelectBox
+                  type="quantity"
+                  name={item.name}
+                  items={item.quantities}
+                  defaultValue={selectedQuantity}
+                  onChange={handleQuantityChange}
                 />
               </div>
             </div>
@@ -178,7 +289,7 @@ export default CartItem;
 
 CartItem.propTypes = {
   item: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     price: PropTypes.number.isRequired,
     image: PropTypes.string.isRequired,

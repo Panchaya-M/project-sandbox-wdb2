@@ -150,3 +150,28 @@ export async function getCartById(cartId) {
     throw error; // re-throw the error to handle it in the calling function
   }
 }
+
+export async function updateItemInCart(cartId, itemId, body) {
+  try {
+    const response = await axios.patch(
+      `https://api.storefront.wdb.skooldio.dev/carts/${cartId}/items/${itemId}`,
+      body
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating item in cart:", error);
+    throw error;
+  }
+}
+
+export async function removeItemFromCart(cartId, itemId) {
+  try {
+    const response = await axios.delete(
+      `https://api.storefront.wdb.skooldio.dev/carts/${cartId}/items/${itemId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error removing item from cart:", error);
+    throw error;
+  }
+}
