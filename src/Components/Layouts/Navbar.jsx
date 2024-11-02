@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 // import BasketEmpty from "../../assets/basket-empty.svg";
@@ -7,30 +7,33 @@ import Heart from "../../assets/heart_w.svg";
 import Person from "../../assets/person_w.svg";
 import Cart from "../../assets/cart_w.svg";
 import Hamburger from "../../assets/hamburger.svg";
-import {getParentCategory} from '../../api';
+import { getParentCategory } from "../../api";
+import Badge from "@mui/material/Badge";
+import { CartContext } from "../contexts/CartContext.jsx";
+import { CategoryContext } from "../contexts/CategoryContext";
 
 function getLink(category) {
   return `/products/${category}`;
 }
 
-const FixedMenuItems = [
-  { name: "Men", link: "men" },
-  { name: "Women", link: "women" },
-  { name: "Collections", link: "collections" },
-];
-
-function Navbar() {
-  const [menuItems, setMenuItems] = useState([]);
+function Navbar({ setIsSidebarOpen, isSidebarOpen }) {
+  const { mappedItem, invisible } = useContext(CartContext);
 
   useEffect(() => {
-    getMenuItems()
-  }, [])
+    getMenuItems();
+  }, []);
 
   async function getMenuItems() {
     const menuItems = await getParentCategory();
 
     setMenuItems(menuItems);
   }
+  const { parentCategories } = useContext(CategoryContext);
+  const [menuItems, setMenuItems] = useState([]);
+
+  useEffect(() => {
+    setMenuItems(parentCategories);
+  }, [parentCategories]);
 
   return (
     <nav className="bg-black text-white">
@@ -41,24 +44,30 @@ function Navbar() {
           {/* Logo Container */}
           <div className="flex gap-x-4">
             {/* Hamburger Icon */}
-            <img className="flex sx:hidden" src={Hamburger} alt="Hamburger" />
+            <button
+              className=""
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            >
+              <img className="flex md:hidden" src={Hamburger} alt="Hamburger" />
+            </button>
             {/* Logo Image */}
-            <Link to="/"><img src="/images/nav-logo-white.png" alt="Logo" /></Link>
+            <Link to="/">
+              <img src="/images/nav-logo-white.png" alt="Logo" />
+            </Link>
           </div>
 
           {/* Menu Container */}
           <div className="">
-            <ul className="hidden sx:flex gap-x-6">
-              {
-                menuItems.length > 0 ? 
+            <ul className="hidden md:flex gap-x-6">
+              {menuItems.length > 0 ? (
                 menuItems.map((item, index) => (
                   <li key={`nav-item-${index}`}>
                     <Link to={getLink(item.permalink)}>{item.name}</Link>
                   </li>
-                )) : (
-                  <p>Loading items...</p>
-                ) 
-              }
+                ))
+              ) : (
+                <p>Loading items...</p>
+              )}
             </ul>
           </div>
         </div>
@@ -77,8 +86,18 @@ function Navbar() {
               <img src={Person} alt="Person" className="h-5" />
             </li>
             <li>
-              <Link to="/cart">
-                <img src={Cart} alt="Cart" className="h-5" />
+              <Link to="/summary">
+                <Badge
+                  sx={{
+                    "& .MuiBadge-badge": {
+                      backgroundColor: "red",
+                    },
+                  }}
+                  variant="dot"
+                  invisible={invisible}
+                >
+                  <img src={Cart} alt="Cart" className="h-5" />
+                </Badge>
               </Link>
             </li>
           </ul>
@@ -87,5 +106,16 @@ function Navbar() {
     </nav>
   );
 }
+
+// <div>
+//         <Badge color="secondary" variant="dot" invisible={invisible}>
+//           <MailIcon />
+//         </Badge>
+//         <FormControlLabel
+//           sx={{ color: 'text.primary' }}
+//           control={<Switch checked={!invisible} onChange={handleBadgeVisibility} />}
+//           label="Show Badge"
+//         />
+//       </div>
 
 export default Navbar;

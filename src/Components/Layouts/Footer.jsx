@@ -1,11 +1,13 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Button from "../UI/Button";
-import ChevronRightCircle from "../../assets/chevron-right-circle.svg"
-import SkooldioLogo from "../../assets/images/skooldio1.png"
-import webDevLogo from "../../assets/images/web-dev1.png"
+import ChevronRightCircle from "../../assets/chevron-right-circle.svg";
+import SkooldioLogo from "../../assets/images/skooldio1.png";
+import webDevLogo from "../../assets/images/web-dev1.png";
 import SecondaryButton from "../UI/SecondaryButton";
 import { Link } from "react-router-dom";
+import { CategoryContext } from "../contexts/CategoryContext";
+import Modal from "../UI/Modal";
 
 const Title = ({ title }) => {
   return <h6 className="font-bold mb-4 md:mb-6">{title}</h6>;
@@ -16,25 +18,26 @@ const Paragraph = ({ text }) => {
 };
 
 function Footer() {
+  const { parentCategories } = useContext(CategoryContext);
+  const [featuredProduct, setFeaturedProduct] = useState([]);
   const [email, setEmail] = useState("");
+  const [isSubscribe, setIsSubscribe] = useState(false);
 
-  {
-    /* List from API */
-  }
-  const featuredProduct = [
-    {
-      name: "Men",
-      link: "men",
-    },
-    {
-      name: "Women",
-      link: "women",
-    },
-    {
-      name: "Collections",
-      link: "collections",
-    },
-  ];
+  useEffect(() => {
+    setFeaturedProduct(parentCategories);
+  }, [parentCategories]);
+
+  const handleSubscribeEmail = (e) => {
+    e.preventDefault();
+    if (email) {
+      setIsSubscribe(true);
+    }
+  };
+
+  const closeModal = () => {
+    setEmail("");
+    setIsSubscribe(false);
+  };
 
   return (
     <footer className="bg-black text-white py-6">
@@ -45,7 +48,12 @@ function Footer() {
             {featuredProduct.length
               ? featuredProduct.map((feature) => (
                   <li key={feature.name} className="text-subHeading mb-4">
-                    <Link to={`/products/${feature.link}`}>{feature.name}</Link>
+                    <Link
+                      to={`/products/${feature.permalink}`}
+                      className="hover:underline"
+                    >
+                      {feature.name}
+                    </Link>
                   </li>
                 ))
               : null}
@@ -57,10 +65,7 @@ function Footer() {
           <Paragraph text="Sign up now and get 20% off your first purchase!" />
 
           <div className="flex justify-center md:justify-start">
-            <SecondaryButton
-              text="Sign up now"
-              icon={ChevronRightCircle}
-            />
+            <SecondaryButton text="Sign up now" icon={ChevronRightCircle} />
           </div>
         </div>
 
@@ -72,7 +77,7 @@ function Footer() {
           />
           <Paragraph text="Email: jane.doe@realmail.com" />
 
-          <form onSubmit={() => console.log("subscribe email: ", email)}>
+          <form onSubmit={handleSubscribeEmail}>
             <div className="mb-4 md:mb-6">
               <input
                 type="email"
@@ -86,7 +91,7 @@ function Footer() {
               <Button
                 type="submit"
                 text="Subscribe"
-                customStyle={{color: '#222222', backgroundColor: '#DEF81C'}}
+                customStyle={{ color: "#222222", backgroundColor: "#DEF81C" }}
               />
             </div>
           </form>
@@ -115,6 +120,34 @@ function Footer() {
           </div>
         </div>
       </div>
+
+      {isSubscribe && (
+        <Modal
+          footer={
+            <div className="flex justify-center gap-4">
+              <Button text="Okay" onClick={closeModal} />
+            </div>
+          }
+          closeModal={closeModal}
+        >
+          <h6
+            className="text-h6Bold text-black-900 text-center mb-4"
+            id="modal-title"
+          >
+            Subscription Successful!
+          </h6>
+          <div className="text-center text-black-900">
+            <p className="test-bodyText mb-4">
+              Thank you for subscribing to our newsletter
+            </p>
+            <p className="text-subHeading mb-4">{email}</p>
+            <p className="test-bodyText">
+              You'll be the first to receive our latest news and special
+              promotions
+            </p>
+          </div>
+        </Modal>
+      )}
     </footer>
   );
 }

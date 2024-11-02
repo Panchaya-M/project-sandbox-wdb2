@@ -113,7 +113,31 @@ const Sort = (props) => {
   const [selected, setSelected] = useState("price-asc");
   const oldSelected = useRef(selected)
 
+<<<<<<< HEAD
   useEffect(() => {
+=======
+  function applySort() {
+    if (
+      props.onChangeSort !== undefined &&
+      typeof props.onChangeSort === "function"
+    ) {
+      props.onChangeSort(selected);
+    }
+    setIsOpen(false);
+  }
+
+  function onChangeSort(changeOnSelect = false, value) {
+    setSelected(value);
+    if (changeOnSelect) {
+      applySort();
+    }
+  }
+
+  function onReset() {
+    setSelected("price-asc");
+    // Need to close(?)
+    // setIsOpen(false);
+>>>>>>> develop
 
   }, [selected])
 
@@ -123,7 +147,7 @@ const Sort = (props) => {
       props.onChangeSort !== undefined &&
       typeof props.onChangeSort === "function"
     ) {
-      props.onChangeSort(value);
+      props.onChangeSort("price-asc");
     }
     setIsOpen(false);
   }
@@ -162,6 +186,27 @@ const Sort = (props) => {
               <div className="w-full h-full bg-limeGreen rounded-full" />
             )}
           </div>
+          <span className="text-sm">{option.name}</span>
+        </button>
+      );
+    })
+  }
+
+  function listSortOptions(changeOnSelect = false) {
+    return sortOptions.map((option) => {
+      return (
+        <button
+          key={`sort-option-${option.value}`}
+          className="block w-full text-left flex justify-start items-center gap-x-4"
+          onClick={() => onChangeSort(changeOnSelect, option.value)}
+        >
+          {/* radio button */}
+          <div className="w-6 h-6 block bg-white border-2 border-limeGreen rounded-full overflow-hidden p-1 inline-block">
+            {selected === option.value && (
+              <div className="w-full h-full bg-limeGreen rounded-full" />
+            )}
+          </div>
+
           <span className="text-sm">{option.name}</span>
         </button>
       );
@@ -220,7 +265,11 @@ const Sort = (props) => {
 
           {/* Sort options */}
           <div className="grid gap-y-4 md:hidden">
+<<<<<<< HEAD
             {listSortOptions(false)}
+=======
+            {listSortOptions()}
+>>>>>>> develop
           </div>
 
           <div className="grid gap-y-4 hidden md:grid">
@@ -229,7 +278,11 @@ const Sort = (props) => {
 
           {/* Mobile: Apply sort buttons */}
           <div className="md:hidden mt-0">
+<<<<<<< HEAD
             <button className="block w-full p-4 text-center bg-black text-white" onClick={()=> applySort()}>Apply</button>
+=======
+            <button className="block w-full p-4 text-center bg-black text-white" onClick={applySort}>Apply</button>
+>>>>>>> develop
           </div>
         </div>
       </div>
@@ -482,8 +535,14 @@ const ProductListPage = () => {
               }
               {
                 products.map((product) => (
+<<<<<<< HEAD
                   <div className="col-span-1" key={`product-card-${product.id}`}>
                     <ProductCard
+=======
+                  <div className="col-span-1">
+                    <ProductCard
+                      key={product.id}
+>>>>>>> develop
                       name={product.name}
                       description={product.description}
                       image={product.imageUrls.length > 0 ? product.imageUrls[0] : ''}
