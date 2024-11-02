@@ -5,62 +5,22 @@ import { Link } from "react-router-dom";
 import Button, { ButtonCustom } from "../UI/Button.jsx";
 import CardEmpty from "../../assets/images/empty_cart.png";
 import Delete from "../../assets/delete.svg";
-import Arrow from "../../assets/arrow_down.svg";
+import Dropdown from "./Dropdown.jsx";
 import { updateItemInCart } from "../../api.js";
 
 // Define the custom size order
 const sizeOrder = ["S", "M", "L", "XL"];
 
 // // Sort the variants by size using the custom order
-// const sortedVariantBySize = (variants = []) => {
-//   if (sizeOrder.includes(variants[0])) {
-//     return variants?.sort(
-//       (a, b) => sizeOrder.indexOf(a) - sizeOrder.indexOf(b)
-//     );
-//   }
+const sortedVariantBySize = (variants = []) => {
+  if (sizeOrder.includes(variants[0])) {
+    return variants?.sort(
+      (a, b) => sizeOrder.indexOf(a) - sizeOrder.indexOf(b)
+    );
+  }
 
-//   return variants?.sort((a, b) => a - b);
-// };
-
-function SelectBox({
-  type,
-  name,
-  items,
-  defaultValue,
-  onChange,
-  disabledOptions = [],
-}) {
-  let isDisabled = false;
-  if (defaultValue === undefined) isDisabled = true;
-  if (items === undefined) items = [];
-
-  return (
-    <div className="relative">
-      <select
-        id={`${type}-${name}`}
-        defaultValue={defaultValue}
-        disabled={isDisabled}
-        onChange={onChange}
-        className={`block appearance-none w-full h-[54px]  border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none  focus:border-gray-500 ${
-          isDisabled ? "bg-gray-200" : "bg-white focus:bg-white"
-        }`}
-      >
-        {items.map((item, index) => (
-          <option
-            key={index}
-            value={item}
-            disabled={disabledOptions.includes(item)}
-          >
-            {item}
-          </option>
-        ))}
-      </select>
-      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-        <img src={Arrow} className="h-4 w-4" />
-      </div>
-    </div>
-  );
-}
+  return variants?.sort((a, b) => a - b);
+};
 
 const CartItem = ({
   item,
@@ -113,23 +73,20 @@ const CartItem = ({
     }
   };
 
-  const handleColorChange = (e) => {
-    const newColor = e.target.value;
+  const handleColorChange = (newColor) => {
+    onColorChange(newColor);
     setSelectedColor(newColor);
     updateCartItem(newColor, selectedSize, selectedQuantity);
   };
 
-  const handleSizeChange = (e) => {
-    const newSize = e.target.value;
+  const handleSizeChange = (newSize) => {
+    onSizeChange(newSize);
     setSelectedSize(newSize);
 
     updateCartItem(selectedColor, newSize, selectedQuantity);
   };
 
-  const handleQuantityChange = (e) => {
-    console.log(">>>>>> ", e.target.value);
-
-    const newQuantity = Number(e.target.value);
+  const handleQuantityChange = (newQuantity) => {
     onQuantityChange(newQuantity);
     setSelectedQuantity(newQuantity);
 
@@ -170,13 +127,12 @@ const CartItem = ({
                 >
                   Color
                 </label>
-                <SelectBox
-                  type="color"
-                  name={item.name}
-                  items={availableColors}
-                  defaultValue={selectedColor}
-                  onChange={handleColorChange}
-                  disabledOptions={disabledColors}
+                <Dropdown
+                  width="100%"
+                  options={item.colors}
+                  disabled={!item.defaultColor}
+                  selectedItem={selectedColor}
+                  setSelectedItem={(e) => handleColorChange(e)}
                 />
               </div>
 
@@ -187,13 +143,12 @@ const CartItem = ({
                 >
                   Size
                 </label>
-                <SelectBox
-                  type="size"
-                  name={item.name}
-                  items={availableSizes}
-                  defaultValue={selectedSize}
-                  onChange={handleSizeChange}
-                  disabledOptions={disabledSizes}
+                <Dropdown
+                  width="100%"
+                  options={sortedVariantBySize(item.sizes)}
+                  disabled={!item.defaultSize}
+                  selectedItem={selectedSize}
+                  setSelectedItem={(e) => handleSizeChange(e)}
                 />
               </div>
 
@@ -204,12 +159,12 @@ const CartItem = ({
                 >
                   Quantity
                 </label>
-                <SelectBox
-                  type="quantity"
-                  name={item.name}
-                  items={item.quantities}
-                  defaultValue={selectedQuantity}
-                  onChange={handleQuantityChange}
+                <Dropdown
+                  width="100%"
+                  options={item.quantities}
+                  disabled={!item.defaultQuantity}
+                  selectedItem={selectedQuantity}
+                  setSelectedItem={(e) => handleQuantityChange(Number(e))}
                 />
               </div>
             </div>
