@@ -6,11 +6,12 @@ import Button, { ButtonCustom } from "../UI/Button.jsx";
 import CardEmpty from "../../assets/images/empty_cart.png";
 import Delete from "../../assets/delete.svg";
 import Dropdown from "./Dropdown.jsx";
+import { updateItemInCart } from "../../api.js";
 
 // Define the custom size order
 const sizeOrder = ["S", "M", "L", "XL"];
 
-// Sort the variants by size using the custom order
+// // Sort the variants by size using the custom order
 const sortedVariantBySize = (variants = []) => {
   if (sizeOrder.includes(variants[0])) {
     return variants?.sort(
@@ -21,37 +22,77 @@ const sortedVariantBySize = (variants = []) => {
   return variants?.sort((a, b) => a - b);
 };
 
-const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
+const CartItem = ({
+  item,
+  onColorChange,
+  onSizeChange,
+  onRemove,
+  cartId,
+  onQuantityChange,
+}) => {
   const [selectedColor, setSelectedColor] = useState(item.defaultColor);
   const [selectedSize, setSelectedSize] = useState(item.defaultSize);
   const [selectedQuantity, setSelectedQuantity] = useState(
     item.defaultQuantity
   );
 
-  console.log(">>>>  ", item);
-  const handleQuantityChange = (quantity) => {
-    setSelectedQuantity(quantity);
-    onQuantityChange(quantity);
+  // Filter sizes for the selected color and disable those with remains = 0
+  const disabledSizes = item.variants
+    .filter(
+      (variant) => variant.color === selectedColor && variant.remains === 0
+    )
+    .map((variant) => variant.size);
+  const availableSizes = item.sizes.filter(
+    (size) => !disabledSizes.includes(size)
+  );
 
-    // updateProduct(item.id, { defaultQuantity: quantity });
+  // Filter colors for the selected size and disable those with remains = 0
+  const disabledColors = item.variants
+    .filter((variant) => variant.size === selectedSize && variant.remains === 0)
+    .map((variant) => variant.color);
+  const availableColors = item.colors.filter(
+    (color) => !disabledColors.includes(color)
+  );
+
+  // Update the cart based on color, size, and quantity selection
+  const updateCartItem = async (newColor, newSize, newQuantity) => {
+    const matchingVariant = item.variants.find(
+      (variant) => variant.color === newColor && variant.size === newSize
+    );
+
+    if (matchingVariant && matchingVariant.remains > 0) {
+      const body = {
+        skuCode: matchingVariant.skuCode,
+        quantity: newQuantity,
+      };
+
+      try {
+        await updateItemInCart(cartId, item.id, body);
+      } catch (error) {
+        console.error("Error updating cart:", error);
+      }
+    } else {
+      console.warn("No stock available for this color/size combination");
+    }
   };
 
-  const handleColorChange = (color) => {
-    setSelectedColor(color);
-    onColorChange(color);
-
-    // updateProduct(item.id, { defaultColor: color });
+  const handleColorChange = (newColor) => {
+    setSelectedColor(newColor);
+    updateCartItem(newColor, selectedSize, selectedQuantity);
   };
 
-  const handleSizeChange = (size) => {
-    setSelectedSize(size);
-    onSizeChange(size);
+  const handleSizeChange = (newSize) => {
+    setSelectedSize(newSize);
 
-    // updateProduct(item.id, { defaultSize: size });
+    updateCartItem(selectedColor, newSize, selectedQuantity);
   };
 
-  const handleRemove = () => {
-    console.log("Remove item:", item.id);
+  const handleQuantityChange = (newQuantity) => {
+    onQuantityChange(newQuantity);
+    setSelectedQuantity(newQuantity);
+
+    // Pass the current color, size, and updated quantity to the updateCartItem function
+    updateCartItem(selectedColor, selectedSize, newQuantity);
   };
 
   return (
@@ -70,7 +111,7 @@ const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
               {item.name}
             </h3>
             <button
-              onClick={handleRemove}
+              onClick={() => onRemove(item.id)}
               className="text-gray-400 hover:text-red-500 transition-colors duration-200 ml-2"
               aria-label="Remove item"
             >
@@ -89,7 +130,7 @@ const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
                 </label>
                 <Dropdown
                   width="100%"
-                  options={item.colors}
+                  options={availableColors}
                   disabled={!item.defaultColor}
                   selectedItem={selectedColor}
                   setSelectedItem={(e) => handleColorChange(e)}
@@ -105,7 +146,7 @@ const CartItem = ({ item, onColorChange, onSizeChange, onQuantityChange }) => {
                 </label>
                 <Dropdown
                   width="100%"
-                  options={sortedVariantBySize(item.sizes)}
+                  options={sortedVariantBySize(availableSizes)}
                   disabled={!item.defaultSize}
                   selectedItem={selectedSize}
                   setSelectedItem={(e) => handleSizeChange(e)}
@@ -178,7 +219,7 @@ export default CartItem;
 
 CartItem.propTypes = {
   item: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     price: PropTypes.number.isRequired,
     image: PropTypes.string.isRequired,

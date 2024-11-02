@@ -10,7 +10,6 @@ const CartSummary = ({ items }) => {
   const { setCartId, setMappedItem, setInvisible } = useContext(CartContext);
   const [checkout, setCheckout] = useState(false);
   const [ty, setTy] = useState(false);
-  console.log("checkout", checkout);
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.price * item.selectedQuantity,
@@ -38,7 +37,6 @@ const CartSummary = ({ items }) => {
 
   const redirecttohomepage = () => {
     // setTy(false);
-    console.log("onconfiem ");
     localStorage.clear();
     setCartId(null);
     setMappedItem([]);
@@ -47,7 +45,7 @@ const CartSummary = ({ items }) => {
 
   return (
     // <div className="xxl:w-[616px] xxl:h-[464px] xl:w-[440px] xl:h-[464px] bg-white w-full md:w-1/3">
-    <div className="xxl:w-[616px] xl:w-[440px]  bg-white w-full md:w-1/3">
+    <div className="xxl:w-[616px] xl:w-[440px]  bg-white w-full  h-full  md:w-1/3">
       <div className="flex flex-col mx-6 my-6 space-y-10">
         {/* detail */}
         <div className="flex flex-col justify-between gap-6">
@@ -129,7 +127,7 @@ const CartSummary = ({ items }) => {
             title="Thank you for your purchase!"
             message={`Your order is confirmed.\n We’re excited to get your items to you soon!\nYou can track your order status in your account.`}
             confirmText="Go to Homepage"
-            cancelText="Stay in this page"
+            cancelText=""
             isOpen={true}
             onClose={closeTyModal}
             onConfirm={redirecttohomepage}
@@ -221,7 +219,7 @@ export function CartSummaryEmpty() {
 CartSummary.propTypes = {
   items: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       price: PropTypes.number.isRequired,
       defaultQuantity: PropTypes.number.isRequired,

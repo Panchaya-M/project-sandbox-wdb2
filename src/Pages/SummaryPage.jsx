@@ -12,6 +12,7 @@ import { CartContext } from "../Components/contexts/CartContext.jsx";
 import { useEffect, useContext, useState } from "react";
 import { getCartById, getProductDetail } from "../api.js";
 import CartSkeleton from "../Components/UI/CartSkeleton.jsx";
+import { removeItemFromCart } from "../api.js";
 
 const VariantSection = ({ children, isEmpty }) => {
   return (
@@ -26,42 +27,33 @@ const VariantSection = ({ children, isEmpty }) => {
   );
 };
 
-const cartItems = [
-  {
-    id: 1,
-    name: "Reyon Long Sleeve Shirt",
-    price: 2000.0,
-    image:
-      "https://images.unsplash.com/photo-1608234808654-2a8875faa7fd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
-    colors: ["Blue", "Red", "Green"],
-    sizes: ["M"],
-    quantities: [1, 2, 3],
-    defaultColor: "Blue",
-    defaultSize: "M",
-    defaultQuantity: 2,
-  },
-  {
-    id: 2,
-    name: "Flexi Move Sneaker",
-    price: 1700.0,
-    image:
-      "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80",
-    colors: ["Trio", "Black", "White"],
-    sizes: ["40"],
-    quantities: [1, 2, 3],
-    defaultColor: "Blue",
-    defaultSize: "M",
-    defaultQuantity: 2,
-  },
-];
-
 export default function SummaryPage() {
   const isEmpty = false;
-  const { cartId, setMappedItem } = useContext(CartContext);
+  const { cartId, setMappedItem, setCartId, setInvisible } =
+    useContext(CartContext);
   const [mappedProducts, setMappedProducts] = useState([]); // State to store the fetched product data
   const [isLoading, setIsLoading] = useState(true);
+  const [groupedValiantByColor, setGroupedValiantByColor] = useState([]);
 
-  const pojorOnclick = async () => {
+  const handleRemoveItem = async (itemId) => {
+    const updatedProducts = mappedProducts.filter((item) => item.id !== itemId);
+    setMappedProducts(updatedProducts);
+
+    try {
+      await removeItemFromCart(cartId, itemId);
+
+      if (updatedProducts.length === 0) {
+        setCartId(null);
+        setMappedItem([]);
+        setInvisible(true);
+      }
+    } catch (error) {
+      console.error("Failed to remove item from cart:", error);
+      setMappedProducts([...mappedProducts]);
+    }
+  };
+
+  const fetchCartData = async () => {
     setIsLoading(true);
     try {
       const cart = await getCartById(cartId);
@@ -74,9 +66,15 @@ export default function SummaryPage() {
             const matchingSku = productDetail.data.variants.find(
               (sku) => sku.skuCode === defaultSkuCode
             );
-            console.log("ideee", productDetail.data.id);
+
+            const variants = productDetail.data.variants.map((variant) => ({
+              skuCode: variant.skuCode,
+              color: variant.color,
+              size: variant.size,
+              remains: variant.remains, // Add remains field to track availability
+            }));
             return {
-              id: productDetail.data.id,
+              id: item.id,
               name: productDetail.data.name,
               price: productDetail.data.price,
               image: productDetail.data.imageUrls[0],
@@ -97,6 +95,7 @@ export default function SummaryPage() {
               selectedColor: matchingSku ? matchingSku.color : null,
               selectedSize: matchingSku ? matchingSku.size : null,
               selectedQuantity: defaultQuantity,
+              variants: variants,
             };
           })
         );
@@ -105,7 +104,6 @@ export default function SummaryPage() {
 
         setMappedProducts(mappedProductsApi);
         setMappedItem(mappedProductsApi);
-        console.log("mappedProducts api", mappedProducts);
       } else {
         setMappedProducts([]);
       }
@@ -114,20 +112,16 @@ export default function SummaryPage() {
     }
   };
 
-  // useEffect to run pojorOnclick on the first render
   useEffect(() => {
-    pojorOnclick();
+    fetchCartData();
   }, []);
 
   const handleUpdate = (id, field, value) => {
-    console.log(id, field, value);
-
     setMappedProducts((prevProducts) =>
       prevProducts.map((product) =>
         product.id === id ? { ...product, [field]: value } : product
       )
     );
-    console.log("mappedProducts after ", mappedProducts);
   };
 
   if (isLoading) {
@@ -147,14 +141,10 @@ export default function SummaryPage() {
                 <div className="grid grid-cols-1 divide-y px-6">
                   {mappedProducts.map((item) => (
                     <CartItem
+                      cartId={cartId}
+                      onRemove={handleRemoveItem}
                       key={item.id}
                       item={item}
-                      onColorChange={(color) =>
-                        handleUpdate(item.id, "selectedColor", color)
-                      }
-                      onSizeChange={(size) =>
-                        handleUpdate(item.id, "selectedSize", size)
-                      }
                       onQuantityChange={(quantity) => {
                         if (quantity === undefined) quantity = 0;
                         handleUpdate(item.id, "selectedQuantity", quantity);
