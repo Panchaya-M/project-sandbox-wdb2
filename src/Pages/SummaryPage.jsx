@@ -29,7 +29,8 @@ const VariantSection = ({ children, isEmpty }) => {
 
 export default function SummaryPage() {
   const isEmpty = false;
-  const { cartId, setMappedItem } = useContext(CartContext);
+  const { cartId, setMappedItem, setCartId, setInvisible } =
+    useContext(CartContext);
   const [mappedProducts, setMappedProducts] = useState([]); // State to store the fetched product data
   const [isLoading, setIsLoading] = useState(true);
   const [groupedValiantByColor, setGroupedValiantByColor] = useState([]);
@@ -40,6 +41,12 @@ export default function SummaryPage() {
 
     try {
       await removeItemFromCart(cartId, itemId);
+
+      if (updatedProducts.length === 0) {
+        setCartId(null);
+        setMappedItem([]);
+        setInvisible(true);
+      }
     } catch (error) {
       console.error("Failed to remove item from cart:", error);
       setMappedProducts([...mappedProducts]);
