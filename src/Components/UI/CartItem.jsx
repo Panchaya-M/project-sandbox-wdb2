@@ -37,18 +37,22 @@ const CartItem = ({
   );
 
   // Filter sizes for the selected color and disable those with remains = 0
-  const availableSizes = item.sizes;
   const disabledSizes = item.variants
     .filter(
       (variant) => variant.color === selectedColor && variant.remains === 0
     )
     .map((variant) => variant.size);
+  const availableSizes = item.sizes.filter(
+    (size) => !disabledSizes.includes(size)
+  );
 
   // Filter colors for the selected size and disable those with remains = 0
-  const availableColors = item.colors;
   const disabledColors = item.variants
     .filter((variant) => variant.size === selectedSize && variant.remains === 0)
     .map((variant) => variant.color);
+  const availableColors = item.colors.filter(
+    (color) => !disabledColors.includes(color)
+  );
 
   // Update the cart based on color, size, and quantity selection
   const updateCartItem = async (newColor, newSize, newQuantity) => {
@@ -74,13 +78,11 @@ const CartItem = ({
   };
 
   const handleColorChange = (newColor) => {
-    onColorChange(newColor);
     setSelectedColor(newColor);
     updateCartItem(newColor, selectedSize, selectedQuantity);
   };
 
   const handleSizeChange = (newSize) => {
-    onSizeChange(newSize);
     setSelectedSize(newSize);
 
     updateCartItem(selectedColor, newSize, selectedQuantity);
@@ -129,7 +131,7 @@ const CartItem = ({
                 </label>
                 <Dropdown
                   width="100%"
-                  options={item.colors}
+                  options={availableColors}
                   disabled={!item.defaultColor}
                   selectedItem={selectedColor}
                   setSelectedItem={(e) => handleColorChange(e)}
@@ -145,7 +147,7 @@ const CartItem = ({
                 </label>
                 <Dropdown
                   width="100%"
-                  options={sortedVariantBySize(item.sizes)}
+                  options={sortedVariantBySize(availableSizes)}
                   disabled={!item.defaultSize}
                   selectedItem={selectedSize}
                   setSelectedItem={(e) => handleSizeChange(e)}
