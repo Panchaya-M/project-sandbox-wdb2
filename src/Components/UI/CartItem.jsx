@@ -74,13 +74,11 @@ const CartItem = ({
   };
 
   const handleColorChange = (newColor) => {
-    onColorChange(newColor);
     setSelectedColor(newColor);
     updateCartItem(newColor, selectedSize, selectedQuantity);
   };
 
   const handleSizeChange = (newSize) => {
-    onSizeChange(newSize);
     setSelectedSize(newSize);
 
     updateCartItem(selectedColor, newSize, selectedQuantity);
