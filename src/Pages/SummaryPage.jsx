@@ -66,7 +66,6 @@ export default function SummaryPage() {
             const matchingSku = productDetail.data.variants.find(
               (sku) => sku.skuCode === defaultSkuCode
             );
-            console.log("ideee", productDetail.data.id);
 
             const variants = productDetail.data.variants.map((variant) => ({
               skuCode: variant.skuCode,
@@ -105,7 +104,6 @@ export default function SummaryPage() {
 
         setMappedProducts(mappedProductsApi);
         setMappedItem(mappedProductsApi);
-        console.log("mappedProducts api", mappedProducts);
       } else {
         setMappedProducts([]);
       }
@@ -119,14 +117,11 @@ export default function SummaryPage() {
   }, []);
 
   const handleUpdate = (id, field, value) => {
-    console.log(id, field, value);
-
     setMappedProducts((prevProducts) =>
       prevProducts.map((product) =>
         product.id === id ? { ...product, [field]: value } : product
       )
     );
-    console.log("mappedProducts after ", mappedProducts);
   };
 
   if (isLoading) {

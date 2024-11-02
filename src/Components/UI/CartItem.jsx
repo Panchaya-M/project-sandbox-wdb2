@@ -68,7 +68,6 @@ const CartItem = ({
 
       try {
         await updateItemInCart(cartId, item.id, body);
-        console.log("Cart updated successfully");
       } catch (error) {
         console.error("Error updating cart:", error);
       }

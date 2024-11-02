@@ -18,8 +18,6 @@ export const CartProvider = ({ children }) => {
   }, [cartId]);
 
   useEffect(() => {
-    console.log(">>>>>>>>>>>>>>>> diplay red dot", invisible);
-
     if (mappedItem.length > 0) setInvisible(false);
   }, [mappedItem]);
 

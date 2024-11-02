@@ -10,7 +10,6 @@ const CartSummary = ({ items }) => {
   const { setCartId, setMappedItem, setInvisible } = useContext(CartContext);
   const [checkout, setCheckout] = useState(false);
   const [ty, setTy] = useState(false);
-  console.log("checkout", checkout);
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.price * item.selectedQuantity,
@@ -38,7 +37,6 @@ const CartSummary = ({ items }) => {
 
   const redirecttohomepage = () => {
     // setTy(false);
-    console.log("onconfiem ");
     localStorage.clear();
     setCartId(null);
     setMappedItem([]);
