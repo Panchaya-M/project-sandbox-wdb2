@@ -3,7 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import Arrow from "../assets/arrow_down.svg";
 import SortByIcon from "../assets/sortby.svg";
-import { getAllCategory, getChildrenCategories, getCollections, getParentCategory, getProductByCategory } from "../api";
+import {
+  getAllCategory,
+  getChildrenCategories,
+  getCollections,
+  getParentCategory,
+  getProductByCategory,
+} from "../api";
 import { ProductCard } from "../Components";
 
 /**
@@ -35,7 +41,7 @@ const Filter = ({ items, onSelectFilter, selectedFilter }) => {
 
   // List filter item
   const listFilterItem = (items) => {
-    if (items === undefined || !isOpen) return
+    if (items === undefined || !isOpen) return;
 
     return items.map((item) => {
       return (
@@ -64,21 +70,26 @@ const Filter = ({ items, onSelectFilter, selectedFilter }) => {
                   justify-between items-center
                   ${selectedFilter === item.id ? "bg-limeGreen" : ""}
                 `}
-
               onClick={() => {
                 if (item.children && item.children.length > 0) {
                   setIsOpen(!isOpen);
                 } else {
-                  item.permalink && item.id && onSelect(item.id, item.permalink, item.name)
+                  item.permalink &&
+                    item.id &&
+                    onSelect(item.id, item.permalink, item.name);
                 }
               }}
             >
               {item.name}
-              {
-                item.children && item.children.length > 0 && (
-                  <img src={Arrow} alt="Arrow Down" className={`pl-4 relative transition-transform ${ isOpen ? 'rotate-180 translate-x-4' : 'rotate-0' }`} />
-                )
-              }
+              {item.children && item.children.length > 0 && (
+                <img
+                  src={Arrow}
+                  alt="Arrow Down"
+                  className={`pl-4 relative transition-transform ${
+                    isOpen ? "rotate-180 translate-x-4" : "rotate-0"
+                  }`}
+                />
+              )}
             </button>
           </div>
           <div className="pl-2">{listFilterItem(item.children)}</div>
@@ -111,7 +122,7 @@ const sortOptions = [
 const Sort = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState("price-asc");
-  const oldSelected = useRef(selected)
+  const oldSelected = useRef(selected);
 
   function applySort() {
     if (
@@ -161,7 +172,7 @@ const Sort = (props) => {
           <span className="text-sm">{option.name}</span>
         </button>
       );
-    })
+    });
   }
 
   return (
@@ -174,7 +185,11 @@ const Sort = (props) => {
       >
         <p className="text-sm max-md:text-[18px]">Sort by</p>
         <img src={Arrow} alt="Arrow Down" className="pl-5 hidden md:block" />
-        <img src={SortByIcon} alt="Arrow Down" className="pl-2 w-10 h-10 md:hidden" />
+        <img
+          src={SortByIcon}
+          alt="Arrow Down"
+          className="pl-2 w-10 h-10 md:hidden"
+        />
       </button>
 
       {/* Sort options */}
@@ -198,26 +213,29 @@ const Sort = (props) => {
           <div className="md:hidden">
             <div className="grid grid-cols-3 text-md">
               <div className="col text-left">
-                <button className="text-info" onClick={() => {
-                  setSelected(oldSelected.current)
-                  setIsOpen(false)
-                  }}>Cancel</button>
+                <button
+                  className="text-info"
+                  onClick={() => {
+                    setSelected(oldSelected.current);
+                    setIsOpen(false);
+                  }}
+                >
+                  Cancel
+                </button>
               </div>
               <div className="col text-center font-semibold">
-                <p className="font-">
-                  Sort by
-                </p>
+                <p className="font-">Sort by</p>
               </div>
               <div className="col text-right">
-                <button className="text-info" onClick={onReset}>Reset</button>
+                <button className="text-info" onClick={onReset}>
+                  Reset
+                </button>
               </div>
             </div>
           </div>
 
           {/* Sort options */}
-          <div className="grid gap-y-4 md:hidden">
-            {listSortOptions()}
-          </div>
+          <div className="grid gap-y-4 md:hidden">{listSortOptions()}</div>
 
           <div className="grid gap-y-4 hidden md:grid">
             {listSortOptions(true)}
@@ -225,7 +243,12 @@ const Sort = (props) => {
 
           {/* Mobile: Apply sort buttons */}
           <div className="md:hidden mt-0">
-            <button className="block w-full p-4 text-center bg-black text-white" onClick={applySort}>Apply</button>
+            <button
+              className="block w-full p-4 text-center bg-black text-white"
+              onClick={applySort}
+            >
+              Apply
+            </button>
           </div>
         </div>
       </div>
@@ -250,13 +273,13 @@ const ProductListPage = () => {
   const [selectedCollection, setSelectedCollection] = useState(null);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedFilter, setSelectedFilter] = useState('')
+  const [selectedFilter, setSelectedFilter] = useState("");
 
   useEffect(() => {
     setSelectedCategory(null);
     setSelectedPermalink(null);
-    _getCollections()
-  }, [params])
+    _getCollections();
+  }, [params]);
 
   useEffect(() => {
     _getCategoryPageDetail();
@@ -268,12 +291,11 @@ const ProductListPage = () => {
   }, [pageDetail]);
 
   useEffect(() => {
-    setSelectedCollection(null)
+    setSelectedCollection(null);
   }, [params.category, params.subCategory]);
 
   // Create category list
   function createCategoryList(fetchedCategories) {
-    console.log('fetchedCategories', fetchedCategories);
     let _categories = {};
 
     // Add to parent category
@@ -320,14 +342,18 @@ const ProductListPage = () => {
 
   async function _getCategoryPageDetail() {
     const categories = await getAllCategory();
-    const currentCategory = categories.find(category => category.permalink === params.category);
+    const currentCategory = categories.find(
+      (category) => category.permalink === params.category
+    );
 
     if (currentCategory) {
       setPageDetail(currentCategory);
     }
 
     if (params.subCategory) {
-      const subCategory = categories.find(category => category.permalink === params.subCategory);
+      const subCategory = categories.find(
+        (category) => category.permalink === params.subCategory
+      );
       setSelectedPermalink(subCategory.permalink);
       setSelectedCategory(subCategory.name);
       setSelectedFilter(subCategory.id);
@@ -354,8 +380,9 @@ const ProductListPage = () => {
       const categories = await getChildrenCategories(pageDetail.id);
 
       const categoriesList = createCategoryList(
-        [{ ...pageDetail, name: 'All products' }, ...categories]
-          .map((category) => ({ ...category, parentId: null }))
+        [{ ...pageDetail, name: "All products" }, ...categories].map(
+          (category) => ({ ...category, parentId: null })
+        )
       );
       setCategories(categoriesList);
     }
@@ -364,15 +391,13 @@ const ProductListPage = () => {
   async function _getCollections() {
     const result = await getCollections();
 
-    setCollections([
-      { id: '', name: 'Collections', children: result },
-    ])
+    setCollections([{ id: "", name: "Collections", children: result }]);
   }
 
   function onSelectFilter(id, permalink, categoryName) {
-    setSelectedFilter(id)
+    setSelectedFilter(id);
     setSelectedPermalink(permalink, categoryName);
-    
+
     if (permalink === pageDetail.permalink) {
       navigate(`/products/${permalink}`);
       // setSelectedCategory(null);
@@ -397,7 +422,9 @@ const ProductListPage = () => {
   }
 
   function renderHeadingTitle() {
-    const mainPageName = checkYourGrammarChangeFromPruralToSingular(pageDetail.name);
+    const mainPageName = checkYourGrammarChangeFromPruralToSingular(
+      pageDetail.name
+    );
     if (mainPageName === null) {
       return "Loading...";
     }
@@ -411,16 +438,16 @@ const ProductListPage = () => {
 
   function checkYourGrammarChangeFromPruralToSingular(text) {
     switch (text) {
-      case 'Ladies':
-        return 'Lady';
-      case 'Men':
-        return 'Man';
-      case 'Kids':
-        return 'Kid';
-      case 'Accessories':
-        return 'Accessory';
-      case 'Women':
-        return 'Woman';
+      case "Ladies":
+        return "Lady";
+      case "Men":
+        return "Man";
+      case "Kids":
+        return "Kid";
+      case "Accessories":
+        return "Accessory";
+      case "Women":
+        return "Woman";
       default:
         return text;
     }
@@ -441,7 +468,7 @@ const ProductListPage = () => {
             <Filter
               items={collections}
               onSelectFilter={(id, permalink, name) => {
-                setSelectedCollection(permalink)
+                setSelectedCollection(permalink);
               }}
               selectedFilter={selectedCollection}
             />
@@ -459,42 +486,43 @@ const ProductListPage = () => {
 
             {/* Products */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-x-10 gap-y-10 mt-10 relative">
-              
-              {
-                isLoading && (
-                  <div className="bg-black/50 w-full h-full absolute z-10 backdrop-blur-md p-4 min-h-16 col-span-full">
-                      <p className="text-center text-white font-bold animate-pulse">Loading products...</p>
-                  </div>
-                )
-              }
+              {isLoading && (
+                <div className="bg-black/50 w-full h-full absolute z-10 backdrop-blur-md p-4 min-h-16 col-span-full">
+                  <p className="text-center text-white font-bold animate-pulse">
+                    Loading products...
+                  </p>
+                </div>
+              )}
 
-              {
-                products.length === 0 && !isLoading && (
-                  <div className="col-span-1">
-                    <p className="text-center">No products found</p>
-                  </div>
-                )
-              }
-              {
-                products.map((product) => (
-                  <div className="col-span-1">
-                    <ProductCard
-                      key={product.id}
-                      name={product.name}
-                      description={product.description}
-                      image={product.imageUrls.length > 0 ? product.imageUrls[0] : ''}
-                      rating={product.ratings}
-                      price={product.price}
-                      promotionPrice={product.promotionalPrice !== undefined ? product.promotionalPrice : 0}
-                      isPromotion={product.promotionalPrice !== product.price}
-                      permalink={product.permalink}
-                      // price={390}
-                      // promotionPrice={290}
-                      // isPromotion={true}
-                    />
-                  </div>
-                ))
-              }
+              {products.length === 0 && !isLoading && (
+                <div className="col-span-1">
+                  <p className="text-center">No products found</p>
+                </div>
+              )}
+              {products.map((product) => (
+                <div className="col-span-1">
+                  <ProductCard
+                    key={product.id}
+                    name={product.name}
+                    description={product.description}
+                    image={
+                      product.imageUrls.length > 0 ? product.imageUrls[0] : ""
+                    }
+                    rating={product.ratings}
+                    price={product.price}
+                    promotionPrice={
+                      product.promotionalPrice !== undefined
+                        ? product.promotionalPrice
+                        : 0
+                    }
+                    isPromotion={product.promotionalPrice !== product.price}
+                    permalink={product.permalink}
+                    // price={390}
+                    // promotionPrice={290}
+                    // isPromotion={true}
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>
