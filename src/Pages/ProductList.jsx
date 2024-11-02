@@ -12,6 +12,14 @@ import {
 } from "../api";
 import { ProductCard } from "../Components";
 
+// ==================================
+//  Field configuration
+// ==================================
+//
+const PRICE_FIELD = "promotionalPrice";
+const DEFAULT_SORT = "asc";
+//
+// ==================================
 /**
  *
  * @param { categories: {
@@ -109,8 +117,8 @@ const Filter = ({ items, onSelectFilter, selectedFilter }) => {
 };
 
 const sortOptions = [
-  { name: "Price - Low to High", value: "price-asc" },
-  { name: "Price - High to Low", value: "price-desc" },
+  { name: "Price - Low to High", value: `${PRICE_FIELD}-asc` },
+  { name: "Price - High to Low", value: `${PRICE_FIELD}-desc` },
   { name: "Best seller", value: "best-seller" },
 ];
 
@@ -121,15 +129,15 @@ const sortOptions = [
  */
 const Sort = (props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState("price-asc");
+  const [selected, setSelected] = useState(`${PRICE_FIELD}-${DEFAULT_SORT}`);
   const oldSelected = useRef(selected);
 
-  function applySort() {
+  function applySort(value = selected) {
     if (
       props.onChangeSort !== undefined &&
       typeof props.onChangeSort === "function"
     ) {
-      props.onChangeSort(selected);
+      props.onChangeSort(value);
     }
     setIsOpen(false);
   }
@@ -137,12 +145,13 @@ const Sort = (props) => {
   function onChangeSort(changeOnSelect = false, value) {
     setSelected(value);
     if (changeOnSelect) {
-      applySort();
+      applySort(value);
     }
   }
 
   function onReset() {
-    setSelected("price-asc");
+    const defaultSort = `${PRICE_FIELD}-${DEFAULT_SORT}`;
+    setSelected(defaultSort);
     // Need to close(?)
     // setIsOpen(false);
 
@@ -150,7 +159,7 @@ const Sort = (props) => {
       props.onChangeSort !== undefined &&
       typeof props.onChangeSort === "function"
     ) {
-      props.onChangeSort("price-asc");
+      props.onChangeSort(defaultSort);
     }
   }
 
@@ -159,16 +168,15 @@ const Sort = (props) => {
       return (
         <button
           key={`sort-option-${option.value}`}
-          className="block w-full text-left flex justify-start items-center gap-x-4"
+          className="w-full text-left flex justify-start items-center gap-x-4"
           onClick={() => onChangeSort(changeOnSelect, option.value)}
         >
           {/* radio button */}
-          <div className="w-6 h-6 block bg-white border-2 border-limeGreen rounded-full overflow-hidden p-1 inline-block">
+          <div className="w-6 h-6 bg-white border-2 border-limeGreen rounded-full overflow-hidden p-1 inline-block">
             {selected === option.value && (
               <div className="w-full h-full bg-limeGreen rounded-full" />
             )}
           </div>
-
           <span className="text-sm">{option.name}</span>
         </button>
       );
@@ -235,9 +243,9 @@ const Sort = (props) => {
           </div>
 
           {/* Sort options */}
-          <div className="grid gap-y-4 md:hidden">{listSortOptions()}</div>
+          <div className="grid gap-y-4 md:hidden">{listSortOptions(false)}</div>
 
-          <div className="grid gap-y-4 hidden md:grid">
+          <div className="gap-y-4 hidden md:grid">
             {listSortOptions(true)}
           </div>
 
@@ -245,7 +253,7 @@ const Sort = (props) => {
           <div className="md:hidden mt-0">
             <button
               className="block w-full p-4 text-center bg-black text-white"
-              onClick={applySort}
+              onClick={() => applySort()}
             >
               Apply
             </button>
@@ -262,7 +270,7 @@ const ProductListPage = () => {
   const params = useParams();
   const navigate = useNavigate();
   const [pageDetail, setPageDetail] = useState({ name: null, id: null });
-  const [sortBy, setSortBy] = useState(["price", "asc"]);
+  const [sortBy, setSortBy] = useState([PRICE_FIELD, DEFAULT_SORT]);
   const [categories, setCategories] = useState({});
   const [products, setProducts] = useState([]);
   const [collections, setCollections] = useState([]);
@@ -409,11 +417,11 @@ const ProductListPage = () => {
 
   function onSort(sortBy) {
     switch (sortBy) {
-      case "price-asc":
-        setSortBy(["price", "asc"]);
+      case `${PRICE_FIELD}-asc`:
+        setSortBy([PRICE_FIELD, "asc"]);
         break;
-      case "price-desc":
-        setSortBy(["price", "desc"]);
+        case `${PRICE_FIELD}-desc`:
+        setSortBy([PRICE_FIELD, "desc"]);
         break;
       case "best-seller":
         setSortBy(["ratings", "desc"]);
@@ -500,9 +508,8 @@ const ProductListPage = () => {
                 </div>
               )}
               {products.map((product) => (
-                <div className="col-span-1">
+                <div className="col-span-1" key={`product-card-${product.id}`}>
                   <ProductCard
-                    key={product.id}
                     name={product.name}
                     description={product.description}
                     image={

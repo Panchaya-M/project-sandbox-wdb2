@@ -6,6 +6,7 @@ import Button, { ButtonCustom } from "../UI/Button.jsx";
 import CardEmpty from "../../assets/images/empty_cart.png";
 import Delete from "../../assets/delete.svg";
 import Dropdown from "./Dropdown.jsx";
+import Arrow from "../../assets/arrow_down.svg";
 import { updateItemInCart } from "../../api.js";
 
 // Define the custom size order

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 // import BasketEmpty from "../../assets/basket-empty.svg";
 import Search from "../../assets/search_w.svg";
@@ -18,6 +18,7 @@ function getLink(category) {
 
 function Navbar({ setIsSidebarOpen, isSidebarOpen }) {
   const { mappedItem, invisible } = useContext(CartContext);
+  const { category } = useParams()
 
   useEffect(() => {
     getMenuItems();
@@ -61,7 +62,7 @@ function Navbar({ setIsSidebarOpen, isSidebarOpen }) {
             <ul className="hidden md:flex gap-x-6">
               {menuItems.length > 0 ? (
                 menuItems.map((item, index) => (
-                  <li key={`nav-item-${index}`}>
+                  <li key={`nav-item-${index}`} className={`${category === item.permalink && "text-limeGreen"}`}>
                     <Link to={getLink(item.permalink)}>{item.name}</Link>
                   </li>
                 ))
